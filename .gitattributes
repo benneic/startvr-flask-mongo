@@ -1,0 +1,11 @@
+# Set the default behavior, in case people don't have core.autocrlf set.
+ text=auto
+*.txt		text
+*.vcproj	text eol=crlf
+*.sh		text eol=lf
+*.c         text
+*.h         text
+*.sln       text eol=crlf
+*.png       binary
+*.jpg       binary
+*.jpg		-text
