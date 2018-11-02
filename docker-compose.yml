@@ -8,6 +8,7 @@ web:
     - mongodb
   environment:
     - FLASK_APP=/app/app.py
+    - MONGO_HOST=mongodb
 mongodb:
   ports:
     - "27017:27017"

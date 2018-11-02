@@ -1,12 +1,15 @@
 from flask import Flask, jsonify, request, render_template
 from flask_pymongo import PyMongo
+from bson import ObjectId
 import pymongo
 import datetime
-from bson import tz_util, ObjectId
+import os
 
 app = Flask(__name__)
-app.config["MONGO_URI"] = "mongodb://localhost:27017/marketcity"
 
+mongo_host = os.environ.get('MONGO_HOST', '127.0.0.1')
+
+app.config["MONGO_URI"] = "mongodb://{}:27017/marketcity".format(mongo_host)
 mongo = PyMongo(app)
 
 
@@ -54,7 +57,6 @@ def scores():
             '$lt': ObjectId.from_datetime(now)
         },
     }
-    tz_util.FixedOffset
     sort = 'score'
     skip = request.args.get('skip', 0)
     limit = request.args.get('limit', 0)
