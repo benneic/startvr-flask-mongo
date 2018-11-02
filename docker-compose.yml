@@ -2,16 +2,12 @@ web:
   build: .
   ports:
     - "8080:8080"
-    - "8888:8888"
   volumes:
     - ./app:/app
   links:
     - mongodb
   environment:
-    - FLASK_APP=app.py
-    - FLASK_DEBUG=1
-    - 'RUN=flask run --host=0.0.0.0 --port=8888'
-  command: flask run --host=0.0.0.0 --port=8888
+    - FLASK_APP=/app/app.py
 mongodb:
   ports:
     - "27017:27017"
