@@ -1,5 +1,6 @@
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, Response
 from flask_pymongo import PyMongo
+from flask_moment import Moment
 from bson import ObjectId
 import pymongo
 import datetime
@@ -8,21 +9,18 @@ import os
 app = Flask(__name__)
 
 mongo_host = os.environ.get('MONGO_HOST', '127.0.0.1')
-
 app.config["MONGO_URI"] = "mongodb://{}:27017/marketcity".format(mongo_host)
+
 mongo = PyMongo(app)
+moment = Moment(app)
 
+player_schema = ['email','firstName','lastName','displayName','phone','postcode','hand']
+player_presenter = ['email','firstName','lastName','displayName','phone','postcode','updatedAt','hand']
 
-player_schema = ['email','firstName','lastName','displayName','phone','postcode']
-player_presenter = ['email','firstName','lastName','displayName','phone','postcode','updatedAt']
+score_schema = ['email','displayName','score','easteregg']
+score_presenter = ['email','displayName','score','easteregg']
 
-score_schema = ['email','displayName','score']
-score_presenter = ['email','displayName','score']
-
-
-@app.route("/")
-def hello():
-    return "Welcome to web server of StartVR for Market City"
+iso8601_format_string = '%Y-%m-%dT%H:%M:%SZ'
 
 
 @app.route('/scores', methods=['POST', 'GET'])
@@ -50,54 +48,166 @@ def scores():
         return 'Ok', 200
 
     # GET
-    now = datetime.datetime.utcnow()
+
+    end = request.args.get('to')
+    if end:
+        try:
+            end = datetime.datetime.strptime(end, iso8601_format_string)
+        except ValueError:
+            return 'Bad request: Param "to" format required in UTC time zone and ISO8601 format {}'.format(iso8601_format_string), 400   
+    else:
+        end = datetime.datetime.utcnow()
+
+    start = request.args.get('from')
+    if start:
+        try:
+            start = datetime.datetime.strptime(start, iso8601_format_string)
+        except ValueError:
+            return 'Bad request: Param "to" format required in UTC time zone and ISO8601 format {}'.format(iso8601_format_string), 400   
+    else:
+        start = end - datetime.timedelta(days=1)
+
     query = {
         '_id': {
-            '$gte': ObjectId.from_datetime(now - datetime.timedelta(days=1)),
-            '$lt': ObjectId.from_datetime(now)
+            '$gte': ObjectId.from_datetime(start),
+            '$lt': ObjectId.from_datetime(end)
         },
     }
     sort = 'score'
-    skip = request.args.get('skip', 0)
-    limit = request.args.get('limit', 0)
+    skip = int(request.args.get('skip', 0))
+    limit = int(request.args.get('limit', 0))
+    output = request.args.get('output')
 
-    scores = []
-    for score in mongo.db.scores.find(query).sort(sort, pymongo.DESCENDING).skip(skip).limit(limit): 
-        scores.append({
-            'time': score['_id'].generation_time.isoformat(),
-            'score': score.get('score', 0),
-            'displayName': score.get('displayName' ,''),
-            'email': score.get('email',''),
+    
+    cursor = mongo.db.scores.find(query).sort(sort, pymongo.DESCENDING).skip(skip).limit(limit)
+
+
+    if output == 'json':
+        scores = []
+        for score in cursor: 
+            scores.append({
+                'time': score['_id'].generation_time.isoformat(),
+                'score': score.get('score', 0),
+                'easteregg': score.get('easteregg', False),
+                'email': score.get('email',''),
+                'displayName': score.get('displayName' ,''),
+            })
+        
+        return jsonify({
+            'scores': scores,
+            'query': {
+                'from': start.isoformat(),
+                'to': end.isoformat(),
+                'sort': sort,
+                'skip': skip,
+                'limit': limit
+            }
         })
-    return jsonify({
-        'scores': scores
-    })
+
+    # output in delimited format
+    headers = {}
+    if output == 'csv':
+        filename = "VR Players {} to {}".format(start.isoformat()[:10], end.isoformat()[:10])
+        headers['Content-Disposition'] = "attachment; filename='{}.csv'".format(filename)
+        mimetype = 'text/csv; charset=utf-8'
+        seperator = ','
+    else:
+        mimetype = 'text/text; charset=utf-8'
+        seperator = '|'
+
+    def generate():
+        for score in cursor: 
+            yield "{1}{0}{2}{0}{3}{0}{4}{0}{5}\n".format(
+                seperator,
+                score['_id'].generation_time.isoformat(),
+                score.get('score', 0),
+                score.get('easteregg', False),
+                score.get('email',''),
+                score.get('displayName' ,'')
+            )
+    
+    return Response(generate(), headers=headers, mimetype=mimetype)
 
 
 @app.route('/players', methods=['GET'])
 def players():
     
     # GET
-    now = datetime.datetime.utcnow()
+    end = request.args.get('to')
+    if end:
+        try:
+            end = datetime.datetime.strptime(end, iso8601_format_string)
+        except ValueError:
+            return 'Bad request: Param "to" format required in UTC time zone and ISO8601 format {}'.format(iso8601_format_string), 400   
+    else:
+        end = datetime.datetime.utcnow()
+
+    start = request.args.get('from')
+    if start:
+        try:
+            start = datetime.datetime.strptime(start, iso8601_format_string)
+        except ValueError:
+            return 'Bad request: Param "to" format required in UTC time zone and ISO8601 format {}'.format(iso8601_format_string), 400   
+    else:
+        start = end - datetime.timedelta(days=1)
+
     query = {
         'updatedAt': {
-            '$gte': now - datetime.timedelta(days=1),
-            '$lt': now
+            '$gte': start,
+            '$lt': end
         },
     }
     sort = 'updatedAt'
-    skip = request.args.get('skip', 0)
-    limit = request.args.get('limit', 0)
+    skip = int(request.args.get('skip', 0))
+    limit = int(request.args.get('limit', 0))
+    output = request.args.get('output')
 
-    players = []
-    for player in mongo.db.players.find(query).sort(sort, pymongo.DESCENDING).skip(skip).limit(limit): 
-        players.append({
-            param: player.get(param) 
-            for param in player_presenter
+    cursor = mongo.db.players.find(query).sort(sort, pymongo.DESCENDING).skip(skip).limit(limit)
+
+    if output == 'json':
+        players = []
+        for player in cursor: 
+            players.append({
+                param: player.get(param) 
+                for param in player_presenter
+            })
+        return jsonify({
+            'players': players,
+            'query': {
+                'from': start.isoformat(),
+                'to': end.isoformat(),
+                'sort': sort,
+                'skip': skip,
+                'limit': limit
+            }
         })
-    return jsonify({
-        'players': players
-    })
+    
+    # output in delimited format
+    headers = {}
+    if output == 'csv':
+        filename = "VR Scores {} to {}".format(start.isoformat()[:10], end.isoformat()[:10])
+        headers['Content-Disposition'] = "attachment; filename='{}.csv'".format(filename)
+        mimetype = 'text/csv; charset=utf-8'
+        seperator = ','
+    else:
+        mimetype = 'text/text; charset=utf-8'
+        seperator = '|'
+
+    def generate():
+        for player in cursor: 
+            yield '{1}{0}"{2}"{0}"{3}"{0}"{4}"{0}{5}{0}"{6}"{0}"{7}"{0}"{8}"\n'.format(
+                seperator,
+                player.get('updatedAt').isoformat(),
+                player.get('hand', 'both'),
+                player.get('email',''),
+                player.get('phone',''),
+                player.get('postcode',''),
+                player.get('displayName' ,''),
+                player.get('firstName' ,''),
+                player.get('lastName' ,'')
+            )
+    
+    return Response(generate(), headers=headers, mimetype=mimetype)
 
 
 @app.route('/signup', methods=['GET','POST'])
@@ -127,6 +237,11 @@ def signup():
     return render_template('signup.html')
 
 
+@app.route('/', methods=['GET'])
+def report():
+    return render_template('index.html')
+
+
 def ignore_exception(IgnoreException=Exception,DefaultVal=None):
     """ Decorator for ignoring exception from a function
     e.g.   @ignore_exception(DivideByZero)
@@ -144,4 +259,4 @@ def ignore_exception(IgnoreException=Exception,DefaultVal=None):
 
 if __name__ == "__main__":
     # Only for debugging while developing
-    app.run(host='0.0.0.0', debug=True, port=8080)
+    app.run(host='0.0.0.0', debug=True, port=5000)

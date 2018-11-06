@@ -1,0 +1,53 @@
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0%;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+
+.snow {
+    background-color: #cccccc;
+    background-image: url("/static/v01/UI_Snow_Background.png");
+    background-position-x: center;
+    background-position-y: top;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+}
+
+.snow-header {
+    height: 240px;
+    background-image: url("/static/v01/UI_Logo_static.png");
+    background-size: 30%;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.snow-form {
+    text-align: left;
+    padding: 5%;
+}
+
+.was-validated .form-control:valid {
+    border-color: #28a745;
+    background-color: #28a745;
+}
+
+.snow-form a{
+    color: white !important;
+    text-decoration: underline !important;
+}
+
+.snow-footer {
+    background-image: url("/static/v01/UI_Snowy_Sign.png");
+    background-size: 100%;
+    height: 500px;
+    background-position: center, bottom;
+    background-repeat: no-repeat;
+}
+

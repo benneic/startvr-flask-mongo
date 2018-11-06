@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,134 +9,205 @@
     <link rel=stylesheet type=text/css href="/static/styles.css">
 
     <!-- Bootstrap -->
-    <!-- <link rel="stylesheet" href="/static/bootstrap.css"> -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/bootstrap.css">
+    <!-- link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+        crossorigin="anonymous" -->
+
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+
+    <script src="/static/bootstrap.bundle.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/static/daterangepicker.css" />
 
 </head>
 
 <body>
-    <header>
-        <div>
-            <div>
-                <h1>
-                    Sign Up!
-                </h1>
-            </div>
-    </header>
+    <div class="snow">
 
-    {% for message in get_flashed_messages() %}
-    <p class=message>{{ message }}</p>
-    {% endfor %}
+        <div class="snow-header">
+        </div>
+        <div class="snow-form">
+            <!-- Signup Form -->
+            <form method="POST" action="" class="needs-validation" novalidate>
 
-    {% if firstName %}
-    <h1>Thanks for signing up {{ firstName }} {{ lastName }}!</h1>
-    {% endif %}
-
-    <!-- Signup Form -->
-    <form method="POST" action="" class="needs-validation" novalidate>
-    
-        <div class="form-row">
-                <div class="col-md-3 mb-3">
-                    <input type="text" class="form-control" id="firstName" name="firstName" placeholder="First name" minlength="1" maxlength="100" required>
+                <div class="form-group">
+                    <input type="text" class="form-control" id="firstName" name="firstName" placeholder="First name"
+                        minlength="1" maxlength="100" required>
                     <div class="invalid-feedback">
                         Please tell us your first name.
                     </div>
                 </div>
-                <div class="col-md-3 mb-3">
-                    <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Last Name" minlength="1" maxlength="100" required>
+                <div class="form-group">
+
+                    <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Last Name"
+                        minlength="1" maxlength="100" required>
                     <div class="invalid-feedback">
                         Please tell us your last name.
                     </div>
                 </div>
-            </div>
-
-        <div class="form-row">
-                <div class="col-md-3 mb-3">
-                    <input type="email" class="form-control" id="email" name="email" placeholder="your@email.com" required>
+                <div class="form-group">
+                    <input type="email" class="form-control" id="email" name="email" placeholder="your@email.com"
+                        required>
                     <div class="invalid-feedback">
                         Please provide a valid email.
                     </div>
                 </div>
-                <div class="col-md-3 mb-3">
-                    <input type="text" class="form-control" id="phone" name="phone" placeholder="Mobile number" minlength="8"
-                        maxlength="20" required>
+                <div class="form-group">
+                    <input type="text" class="form-control" id="phone" name="phone" placeholder="Mobile number"
+                        minlength="8" maxlength="20" required>
                     <div class="invalid-feedback">
                         Please enter your phone number.
                     </div>
                 </div>
-            </div>
-        <div class="form-row">
-            <div class="col-md-3 mb-3">
-                <input type="number" class="form-control" id="postcode" name="postcode" placeholder="Postcode" required>
-                <div class="invalid-feedback">
-                    Please provide a valid postcode.
-                </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <input type="text" class="form-control" id="displayName" name="displayName" placeholder="Display Name"  aria-describedby="displayNameHelpBlock"
-                minlength="3"
-                    maxlength="12" required>
-                <div class="invalid-feedback">
-                    Must be 3-12 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
-                </div>
-            </div>
-        </div>
-
-        <div class="form-row">
-                <div class="col-md-4 mb-3">
-
-            <div class="form-group">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required>
-                    <label class="form-check-label" for="invalidCheck">
-                        Agree to terms and conditions
-                    </label>
+                <div class="form-group">
+                    <input type="number" class="form-control" id="postcode" name="postcode" placeholder="Postcode"
+                        required>
                     <div class="invalid-feedback">
-                        You must agree before submitting.
+                        Please provide a valid postcode.
                     </div>
                 </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" id="displayName" name="displayName" placeholder="Display Name"
+                        aria-describedby="displayNameHelpBlock" minlength="3" maxlength="12" required>
+                    <div class="invalid-feedback">
+                        Must be 3-12 characters long, contain letters and numbers, and must not contain spaces,
+                        special
+                        characters, or emoji.
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="hand" id="inlineRadio1" value="left">
+                        <label class="form-check-label" for="inlineRadio1">Left</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="hand" id="inlineRadio2" value="right"
+                            checked>
+                        <label class="form-check-label" for="inlineRadio2">Right</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="hand" id="inlineRadio3" value="both">
+                        <label class="form-check-label" for="inlineRadio3">Both</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="agreeCheck" required>
+                        <label class="form-check-label" for="agreeCheck">
+                            Agree to
+                            <a data-toggle="modal" data-target="#tacModal">
+                                Terms & Conditions
+                            </a>.
+                        </label>
+                        <div class="invalid-feedback">
+                            You must agree before submitting.
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary" type="submit">Submit form</button>
+
+            </form>
+
+
+
+
+        </div>
+        <div class="snow-footer">
+        </div>
+    </div>
+
+    <!-- Ts & Cs Modal -->
+    <div class="modal fade" id="tacModal" tabindex="-1" role="dialog" aria-labelledby="tacModalTitle" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="tacModalTitle">Terms and Conditions</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Blah blah blah....
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        Close
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="document.getElementById('agreeCheck').checked=true;"
+                        data-dismiss="modal">
+                        I agree
+                    </button>
+                </div>
             </div>
         </div>
-        <div class="col-md-2 mb-3">
-            <button class="btn btn-primary" type="submit">Submit form</button>
-        </div>
+    </div>
 
+    {% if firstName %}
+    <!-- Thank You Modal -->
+    <div class="modal fade show" id="thanksModal" tabindex="-1" role="dialog" aria-labelledby="thanksModalTitle" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="tacModalTitle">Success!</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <h2>
+                        Thanks for signing up {{ firstName }} {{ lastName }}.
+                    </h2>
+                    <h2>
+                        Now get ready to play!
+                    </h2>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">
+                        Close
+                    </button>
+                </div>
+            </div>
         </div>
-
-    </form>
+    </div>
+    {% endif %}
 
 
     <script>
-            // Example starter JavaScript for disabling form submissions if there are invalid fields
-            (function() {
-              'use strict';
-              window.addEventListener('load', function() {
+        // Example starter JavaScript for disabling form submissions if there are invalid fields
+        (function () {
+            'use strict';
+            window.addEventListener('load', function () {
                 // Fetch all the forms we want to apply custom Bootstrap validation styles to
                 var forms = document.getElementsByClassName('needs-validation');
                 // Loop over them and prevent submission
-                var validation = Array.prototype.filter.call(forms, function(form) {
-                  form.addEventListener('submit', function(event) {
-                    if (form.checkValidity() === false) {
-                      console.log('not valid');
-                      event.preventDefault();
-                      event.stopPropagation();
-                    }
-                    else {
-                        console.log('seems valid');
-                        console.log(form.serialize());
-                    }
-                    form.classList.add('was-validated');
-                  }, false);
+                var validation = Array.prototype.filter.call(forms, function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (form.checkValidity() === false) {
+                            console.log('not valid');
+                            event.preventDefault();
+                            event.stopPropagation();
+                        } else {
+                            console.log('seems valid');
+                            console.log(form.serialize());
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
                 });
-              }, false);
-            })();
-            </script>
+            }, false);
+        })();
+    </script>
+        
+    {% if firstName %}
+    <script>
+        // show the thanks modal on page load if firstname is set
+        $(window).ready(function(){        
+            $('#thanksModal').modal('show');
+        }); 
+    </script>
+    {% endif %}
 
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-  
 </body>
 
 </html>
