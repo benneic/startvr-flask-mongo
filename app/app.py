@@ -1,6 +1,5 @@
 from flask import Flask, jsonify, request, render_template, Response
 from flask_pymongo import PyMongo
-from flask_moment import Moment
 from bson import ObjectId
 import pymongo
 import datetime
@@ -12,7 +11,6 @@ mongo_host = os.environ.get('MONGO_HOST', '127.0.0.1')
 app.config["MONGO_URI"] = "mongodb://{}:27017/marketcity".format(mongo_host)
 
 mongo = PyMongo(app)
-moment = Moment(app)
 
 player_schema = ['email','firstName','lastName','displayName','phone','postcode','hand']
 player_presenter = ['email','firstName','lastName','displayName','phone','postcode','updatedAt','hand']
