@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Signup</title>
+    <link rel=stylesheet type=text/css href="/static/styles.css">
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="/static/bootstrap.css">
+    <!-- link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+        crossorigin="anonymous" -->
+
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+
+    <script src="/static/bootstrap.bundle.js"></script>
+
+    <script type="text/javascript" src="/static/moment.min.js"></script>
+    <script type="text/javascript" src="/static/daterangepicker.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/daterangepicker.css" />
+
+</head>
+
+<body>
+ 
+
+<div class="reports">
+        <div class="snow-header">
+                <h3>Market City VR Reports</h3>
+                <a href="/signup" class="btn btn-secondary">Signup Form</a>
+        </div>
+        <div class="snow-form">
+                <!-- Signup Form -->
+                <form id="reportForm" method="GET" action="/players" target="_blank" class="needs-validation" novalidate>
+    
+                    <label for="dateSelector">Select date range for report</label>
+                    <div class="form-group" id="dateSelector" name="dateSelector">
+                        <div id="reportrange" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+                            <i class="fa fa-calendar"></i>&nbsp;
+                            <span></span> <i class="fa fa-caret-down"></i>
+                        </div>
+                        <input type='hidden' name="from" value=""/>
+                        <input type='hidden' name="to" value=""/>
+                        
+                        <script type="text/javascript">
+                        $(function() {
+                        
+                            var start = moment().startOf('day');
+                            var end = moment();
+                        
+                            function cb(start, end) {
+                                $('#reportrange span').html(start.format('DD/MM/YYYY') + ' to ' + end.format('DD/MM/YYYY'));
+                                end.add(1, 'days').startOf('day');
+                                $('#dateSelector input[name=from]').val(start.utc().format());
+                                $('#dateSelector input[name=to]').val(end.utc().format());
+                                console.log("start date ="+ start.utc().format());
+                                console.log("end date ="+ end.utc().format());
+                            }
+                        
+                            $('#reportrange').daterangepicker({
+                                startDate: start,
+                                endDate: end,
+                                ranges: {
+                                    'Today': [moment().startOf('day'), moment()],
+                                    'Yesterday': [moment().subtract(1, 'days').startOf('day'), moment().subtract(1, 'days')],
+                                    'Last 7 Days': [moment().subtract(6, 'days').startOf('day'), moment()],
+                                    'Last 30 Days': [moment().subtract(29, 'days').startOf('day'), moment()],
+                                    'This Month': [moment().startOf('month').startOf('day'), moment().endOf('month')],
+                                    'Last Month': [moment().subtract(1, 'month').startOf('month').startOf('day'), moment().subtract(1, 'month').endOf('month')]
+                                }
+                            }, cb);
+                        
+                            cb(start, end);
+                        
+                        });
+                        </script>
+
+                    </div>
+                    <label for="reportSelector">Choose report type</label>
+                    <div class="form-group" name="reportSelector">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="report" id="inlineRadio1" value="players" checked onclick="$('#reportForm').attr('action','/players')">
+                            <label class="form-check-label" for="inlineRadio1">Players</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="report" id="inlineRadio2" value="scores"
+                                onclick="$('#reportForm').attr('action','/scores')">
+                            <label class="form-check-label" for="inlineRadio2">Scores</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="report" id="inlineRadio3" value="stats" disabled onclick="$('#reportForm').attr('action','/stats')">
+                            <label class="form-check-label" for="inlineRadio3">Player Stats</label>
+                        </div>
+                    </div>
+                    <label for="reportOutput">Choose format</label>
+                    <div class="form-group" name="reportOutput">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="output" id="inlineRadio1" value="csv">
+                            <label class="form-check-label" for="inlineRadio1">CSV</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="output" id="inlineRadio2" value="json"
+                                checked>
+                            <label class="form-check-label" for="inlineRadio2">JSON</label>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" type="submit">Download</button>
+    
+                </form>
+    
+    
+    
+    
+            </div>
+
+</div>
+
+
+</body>
+
+</html>

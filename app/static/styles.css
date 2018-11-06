@@ -12,7 +12,7 @@ body {
 
 .snow {
     background-color: #cccccc;
-    background-image: url("/static/v01/UI_Snow_Background.png");
+    background-image: url("/static/assets/UI_Snow_Background.png");
     background-position-x: center;
     background-position-y: top;
     background-repeat: no-repeat;
@@ -22,7 +22,7 @@ body {
 
 .snow-header {
     height: 240px;
-    background-image: url("/static/v01/UI_Logo_static.png");
+    background-image: url("/static/assets/UI_Logo_static.png");
     background-size: 30%;
     background-position: center;
     background-repeat: no-repeat;
@@ -44,7 +44,7 @@ body {
 }
 
 .snow-footer {
-    background-image: url("/static/v01/UI_Snowy_Sign.png");
+    background-image: url("/static/assets/UI_Snowy_Sign.png");
     background-size: 100%;
     height: 500px;
     background-position: center, bottom;
