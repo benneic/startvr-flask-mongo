@@ -32,7 +32,7 @@ mongo = PyMongo(app)
 moment = Moment(app)
 
 player_schema = ['email','firstName','lastName','displayName','phone','postcode','hand']
-player_presenter = ['email','firstName','lastName','displayName','phone','postcode','updatedAt','hand']
+player_presenter = ['email','firstName','lastName','displayName','phone','postcode','updatedAt','hand','scores']
 
 score_schema = ['email','displayName','score','easteregg']
 score_presenter = ['email','displayName','score','easteregg']
@@ -97,7 +97,11 @@ def scores():
             '$lt': ObjectId.from_datetime(end)
         },
     }
-    sort = 'score'
+
+    sort = request.args.get('sort', 'score')
+    if sort == 'time':
+        sort = '_id'
+
     skip = int(request.args.get('skip', 0))
     limit = int(request.args.get('limit', 0))
     output = request.args.get('output')
@@ -182,7 +186,15 @@ def players():
             '$lt': end
         },
     }
-    sort = 'updatedAt'
+    
+    sort = request.args.get('sort', 'time')
+    if sort == 'time':
+        sort = 'updatedAt'
+    elif sort == 'score':
+        sort = 'scores'        
+
+    print('sorting with', sort)
+
     skip = int(request.args.get('skip', 0))
     limit = int(request.args.get('limit', 0))
     output = request.args.get('output')

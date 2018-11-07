@@ -96,15 +96,26 @@
                             <label class="form-check-label" for="inlineRadio3">Player Stats</label>
                         </div>
                     </div>
+                    <label for="reportSort">Choose sort order</label>
+                    <div class="form-group" name="reportSort">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="sort" id="inlineRadio1time" value="time" checked>
+                            <label class="form-check-label" for="inlineRadio1time">Time</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="sort" id="inlineRadio2time" value="score">
+                            <label class="form-check-label" for="inlineRadio2time">Score</label>
+                        </div>
+                    </div>
                     <label for="reportOutput">Choose format</label>
                     <div class="form-group" name="reportOutput">
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="output" id="inlineRadio1" value="html" checked>
-                            <label class="form-check-label" for="inlineRadio1">HTML</label>
+                            <input class="form-check-input" type="radio" name="output" id="inlineRadio1output" value="html" checked>
+                            <label class="form-check-label" for="inlineRadio1output">HTML</label>
                         </div>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="output" id="inlineRadio1" value="csv">
-                            <label class="form-check-label" for="inlineRadio1">CSV</label>
+                            <input class="form-check-input" type="radio" name="output" id="inlineRadio2output" value="csv">
+                            <label class="form-check-label" for="inlineRadio2output">CSV</label>
                         </div>
                     </div>
                     <button class="btn btn-primary" type="submit">Download</button>
