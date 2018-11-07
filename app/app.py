@@ -1,16 +1,35 @@
 from flask import Flask, jsonify, request, render_template, Response
+from flask.json import JSONEncoder
 from flask_pymongo import PyMongo
+from flask_moment import Moment
 from bson import ObjectId
 import pymongo
 import datetime
 import os
 
+
+class CustomJSONEncoder(JSONEncoder):
+    def default(self, obj):
+        try:
+            if isinstance(obj, datetime.datetime):
+                return obj.isoformat()
+            iterable = iter(obj)
+        except TypeError:
+            pass
+        else:
+            return list(iterable)
+        return JSONEncoder.default(self, obj)
+
+
 app = Flask(__name__)
+app.json_encoder = CustomJSONEncoder
 
 mongo_host = os.environ.get('MONGO_HOST', '127.0.0.1')
 app.config["MONGO_URI"] = "mongodb://{}:27017/marketcity".format(mongo_host)
 
 mongo = PyMongo(app)
+
+moment = Moment(app)
 
 player_schema = ['email','firstName','lastName','displayName','phone','postcode','hand']
 player_presenter = ['email','firstName','lastName','displayName','phone','postcode','updatedAt','hand']
@@ -43,7 +62,14 @@ def scores():
             doc[param] = content[param]
 
         mongo.db.scores.save(doc)
-        return 'Ok', 200
+        
+        # save score to players record
+        mongo.db.players.update({ 
+                "_id": content['email'] 
+            }, {
+                "$push": { "scores" : content['score']}
+            })
+        return 'OK', 200
 
     # GET
 
@@ -75,21 +101,22 @@ def scores():
     skip = int(request.args.get('skip', 0))
     limit = int(request.args.get('limit', 0))
     output = request.args.get('output')
-
     
     cursor = mongo.db.scores.find(query).sort(sort, pymongo.DESCENDING).skip(skip).limit(limit)
 
-
-    if output == 'json':
+    if output in ['json','html']:
         scores = []
         for score in cursor: 
             scores.append({
-                'time': score['_id'].generation_time.isoformat(),
+                'time': score['_id'].generation_time,
                 'score': score.get('score', 0),
                 'easteregg': score.get('easteregg', False),
                 'email': score.get('email',''),
                 'displayName': score.get('displayName' ,''),
             })
+
+        if output == 'html':
+            return render_template('report-scores.html', scores=scores)
         
         return jsonify({
             'scores': scores,

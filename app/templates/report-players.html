@@ -5,8 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Signup</title>
-    <link rel=stylesheet type=text/css href="/static/styles.css">
+    <title>Players</title>
 
     <!-- Bootstrap -->
     <link rel="stylesheet" href="/static/bootstrap.css">
@@ -21,6 +20,7 @@
 
     <script type="text/javascript" src="/static/moment.min.js"></script>
 
+    {{ moment.include_moment() }}
 </head>
 
 <body>
@@ -36,12 +36,14 @@
                 <th scope="col">Phone</th>
                 <th scope="col">Postcode</th>
                 <th scope="col">Hand</th>
+                <th scope="col">Top Score</th>
+                <th scope="col">Plays</th>
               </tr>
             </thead>
             <tbody>
               {% for player in players %}
               <tr>
-                <th scope="row"><script>moment.utc('{{ player.updatedAt }}').fromNow();</script></th>
+                <th scope="row">{{ moment(player.updatedAt, local=False).fromNow() }}</th>
                 <td>{{ player.displayName }}</td>
                 <td>{{ player.firstName }}</td>
                 <td>{{ player.lastName }}</td>
@@ -49,6 +51,8 @@
                 <td>{{ player.phone }}</td>
                 <td>{{ player.postcode }}</td>
                 <td>{{ player.hand }}</td>
+                <td>{{ ((player.scores|default([0]))|sort(reverse=True))[0] }}</td>
+                <td>{{ (player.scores|default([]))|length }}</td>
               </tr>
               {% endfor %}
 

@@ -39,7 +39,7 @@
     
                     <label for="dateSelector">Select date range</label>
                     <div class="form-group" id="dateSelector" name="dateSelector">
-                        <div id="reportrange" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+                        <div class="form-control" id="reportrange" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
                             <i class="fa fa-calendar"></i>&nbsp;
                             <span></span> <i class="fa fa-caret-down"></i>
                         </div>
@@ -72,7 +72,7 @@
                                     'This Month': [moment().startOf('month').startOf('day'), moment().endOf('month')],
                                     'Last Month': [moment().subtract(1, 'month').startOf('month').startOf('day'), moment().subtract(1, 'month').endOf('month')]
                                 }
-                            }, cb);
+                            }, cb); 
                         
                             cb(start, end);
                         
