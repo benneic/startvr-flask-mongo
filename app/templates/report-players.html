@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Signup</title>
+    <link rel=stylesheet type=text/css href="/static/styles.css">
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="/static/bootstrap.css">
+    <!-- link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+        crossorigin="anonymous" -->
+
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+
+    <script src="/static/bootstrap.bundle.js"></script>
+
+    <script type="text/javascript" src="/static/moment.min.js"></script>
+
+</head>
+
+<body>
+    <div>
+        <table class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col">Signed Up</th>
+                <th scope="col">Display Name</th>
+                <th scope="col">First Name</th>
+                <th scope="col">Last Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Phone</th>
+                <th scope="col">Postcode</th>
+                <th scope="col">Hand</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for player in players %}
+              <tr>
+                <th scope="row"><script>moment.utc('{{ player.updatedAt }}').fromNow();</script></th>
+                <td>{{ player.displayName }}</td>
+                <td>{{ player.firstName }}</td>
+                <td>{{ player.lastName }}</td>
+                <td>{{ player.email }}</td>
+                <td>{{ player.phone }}</td>
+                <td>{{ player.postcode }}</td>
+                <td>{{ player.hand }}</td>
+              </tr>
+              {% endfor %}
+
+            </tbody>
+          </table>
+
+    </div>
+    
+
+
+</body>
+
+</html>
