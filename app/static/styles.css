@@ -12,7 +12,7 @@ body {
 
 .snow {
     background-color: #cccccc;
-    background-image: url("/static/assets/UI_Snow_Background.png");
+    background-image: url("/static/assets/UI_Background.png");
     background-position-x: center;
     background-position-y: top;
     background-repeat: no-repeat;
@@ -22,7 +22,7 @@ body {
 
 .snow-header {
     height: 240px;
-    background-image: url("/static/assets/UI_Logo_Static.png");
+    background-image: url("/static/assets/UI_Logo.png");
     background-size: 30%;
     background-position: center;
     background-repeat: no-repeat;
