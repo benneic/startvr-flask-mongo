@@ -162,6 +162,9 @@ def players():
 
     cursor = mongo.db.players.find(query).sort(sort, pymongo.DESCENDING).skip(skip).limit(limit)
 
+    if output == 'html':
+        return render_template('report-players.html', players=cursor)
+
     if output == 'json':
         players = []
         for player in cursor: 
