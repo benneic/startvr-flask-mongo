@@ -30,14 +30,14 @@
 
 <div class="reports">
         <div class="snow-header">
-                <h3>Market City VR Reports</h3>
                 <!-- <a href="/signup" class="btn btn-secondary">Signup Form</a> -->
         </div>
         <div class="snow-form">
+            <h4>Create report</h4>
                 <!-- Signup Form -->
                 <form id="reportForm" method="GET" action="/players" target="_blank" class="needs-validation" novalidate>
     
-                    <label for="dateSelector">Select date range for report</label>
+                    <label for="dateSelector">Select date range</label>
                     <div class="form-group" id="dateSelector" name="dateSelector">
                         <div id="reportrange" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
                             <i class="fa fa-calendar"></i>&nbsp;
@@ -105,10 +105,6 @@
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="radio" name="output" id="inlineRadio1" value="csv">
                             <label class="form-check-label" for="inlineRadio1">CSV</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="output" id="inlineRadio2" value="json">
-                            <label class="form-check-label" for="inlineRadio2">JSON</label>
                         </div>
                     </div>
                     <button class="btn btn-primary" type="submit">Download</button>
