@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Scores</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="/static/bootstrap.css">
+    <!-- link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+        crossorigin="anonymous" -->
+
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+
+    <script src="/static/bootstrap.bundle.js"></script>
+
+    <script type="text/javascript" src="/static/moment.min.js"></script>
+
+    
+    {{ moment.include_moment() }}
+
+</head>
+
+<body>
+    <div>
+        <table class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col">Time</th>
+                <th scope="col">Score</th>
+                <th scope="col">Display Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Easter Egg</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for score in scores %}
+              <tr>
+                <th>{{ moment(score.time, local=False).fromNow() }}</th>
+                <td>{{ score.score }}</td>
+                <td>{{ score.displayName }}</td>
+                <td>{{ score.email }}</td>
+                <td>{{ score.easteregg }}</td>
+              </tr>
+              {% endfor %}
+
+            </tbody>
+          </table>
+
+    </div>
+    
+
+
+</body>
+
+</html>
