@@ -28,6 +28,10 @@ ENV STATIC_INDEX 0
 # Make /app/* available to be imported by Python globally to better support several use cases like Alembic migrations.
 ENV PYTHONPATH=/app
 
+# Periodic Sync task
+# must configure SYNC_DESTINATION in sync.py to do anything interesting
+COPY supervisord-sync-db.conf /etc/supervisor/conf.d/supervisord-sync-db.conf
+
 WORKDIR /app
 
 # install python dependencies
