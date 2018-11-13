@@ -31,15 +31,15 @@
 
             <div class="form-group">
                 <input type="text" class="form-control" id="firstName" name="firstName" placeholder="First name"
-                    minlength="1" maxlength="100" required onchange="$('#firstName')[0].checkValidity(); //$('button[type=submit]')[0].form.blah();">
+                    pattern="[-A-Za-z][^\t\n\r]" minlength="1" maxlength="100" required>
                 <div class="invalid-feedback">
                     Please tell us your first name.
                 </div>
             </div>
             <div class="form-group">
 
-                <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Last Name" minlength="1"
-                    maxlength="100" required>
+                <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Last Name"
+                    pattern="[-A-Za-z][^\t\n\r]" minlength="1" maxlength="100" required>
                 <div class="invalid-feedback">
                     Please tell us your last name.
                 </div>
@@ -51,7 +51,8 @@
                 </div>
             </div>
             <div class="form-group">
-                <input type="text" class="form-control" id="phone" name="phone" placeholder="Mobile number" minlength="8"
+                <input type="text" class="form-control" id="phone" name="phone" placeholder="Mobile number"
+                    pattern="[-()+0-9]{8,20}" minlength="8"
                     maxlength="20" required>
                 <div class="invalid-feedback">
                     Please enter your phone number.
@@ -63,23 +64,14 @@
                     Please provide a valid postcode.
                 </div>
             </div>
-            <div class="form-group">
-                <input type="text" class="form-control" id="displayName" name="displayName" placeholder="Display Name"
-                    aria-describedby="displayNameHelpBlock" minlength="3" maxlength="12" required>
-                <div class="invalid-feedback">
-                    Must be 3-12 characters long, contain letters and numbers, and must not contain spaces,
-                    special
-                    characters, or emoji.
-                </div>
-            </div>
             <div class="form-group form-row">
                 <div class="col">
                     <input type="text" class="form-control" id="displayName" name="displayName" placeholder="Display Name"
-                        aria-describedby="displayNameHelpBlock" minlength="3" maxlength="12" required>
+                        aria-describedby="displayNameHelpBlock" minlength="3" maxlength="12" 
+                        pattern="^[-!$%^&*()_+~={}\[\]:;<>?\/A-Za-z0-9]{3,12}$" autocorrect="off" autocapitalize="none" required>
                     <div class="invalid-feedback">
                         Must be 3-12 characters long, contain letters and numbers, and must not contain spaces,
-                        special
-                        characters, or emoji.
+                        special characters, or emoji.
                 </div>
                 </div>
                 <div class="col">
