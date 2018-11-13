@@ -9,7 +9,7 @@ import time
 import logging
 
 ## SET THESE 
-SYNC_DESTINATION = ''
+SYNC_DESTINATION = '' # should be 'http://server:port'
 logging.basicConfig(level=logging.INFO)
 
 
@@ -28,6 +28,10 @@ if __name__ == "__main__":
     if not SYNC_DESTINATION:
         logging.error('[SYNC-DB] Not syncing requests from this server')
         exit()
+
+    if SYNC_DESTINATION[-1] == '/':
+        # remove trailing slash
+        SYNC_DESTINATION = SYNC_DESTINATION[:-1]
 
     # for each row in requests collection
     # where objectId is less than current run time
