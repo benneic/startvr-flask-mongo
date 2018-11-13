@@ -53,16 +53,12 @@ next_player_schema_hidden = ['isReady']
 iso8601_format_string = '%Y-%m-%dT%H:%M:%SZ'
 
 
-@app.route('/next-player', methods=['GET', 'DELETE'])
-def get_next_player():
+@app.route('/next/<terminal>/player', methods=['GET', 'POST'])
+def get_next_player(terminal):
     # either returns 200 with a result, 204 when successful but no result, or 404 when terminal not found
-    try:
-        terminal = int(request.args.get('terminal'))
-    except TypeError:
-        return 'Please provide terminal id as an integer in query string /next-player?terminal=1', 404
 
     # terminal has started playing with the next player
-    if request.method == 'DELETE':
+    if request.method == 'POST':
         mongo.db.next_player.delete_one({'_id':terminal})
         # successfully processed reponse but not return any content
         print('Deleting next player for terminal', terminal)
@@ -78,7 +74,7 @@ def get_next_player():
     return '', 204
     
 
-@app.route('/next/<int:terminal>', methods=['POST', 'GET', 'DELETE'])
+@app.route('/next/<terminal>', methods=['POST', 'GET', 'DELETE'])
 def manage_next_player(terminal):
     # GET    - return all players waiting to play and the current player waiting to play next for this terminal
     # POST   - assign a player to a terminal to play next
