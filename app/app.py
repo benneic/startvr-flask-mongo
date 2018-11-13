@@ -97,7 +97,7 @@ def manage_next_player(terminal):
             'isReady': False
         }
         for param in next_player_schema:
-            if param not in content or not content[param]:
+            if param not in content or content[param] == '':
                 return 'Bad request: Missing {}'.format(param), 400     
             doc[param] = content[param]
 
@@ -171,7 +171,7 @@ def scores():
 
         doc = dict()
         for param in score_schema:
-            if param not in content or not content[param]:
+            if param not in content or content[param] == '':
                 return 'Bad request: Missing {}'.format(param), 400     
             doc[param] = content[param]
 
@@ -357,7 +357,7 @@ def players():
 
     def generate():
         for player in cursor: 
-            yield '{1}{0}"{2}"{0}"{3}"{0}"{4}"{0}{5}{0}"{6}"{0}"{7}"{0}"{8}"\n'.format(
+            yield '{1}{0}{2}{0}{3}{0}{4}{0}{5}{0}{6}{0}{7}{0}{8}"\n'.format(
                 seperator,
                 player.get('updatedAt').isoformat(),
                 player.get('hand', 'both'),
@@ -386,7 +386,7 @@ def signup():
 
         doc = dict()
         for param in player_schema:
-            if param not in content or not content[param]:
+            if param not in content or content[param] == '':
                 return 'Bad request: Missing {}'.format(param), 400     
             doc[param] = content[param]
 
