@@ -26,22 +26,21 @@ db = mongo[MONGO_COLLECTION]
 if __name__ == "__main__":
 
     if not SYNC_DESTINATION:
-        'Not syncing requests from this server'
+        logging.error('[SYNC-DB] Not syncing requests from this server')
+        exit()
 
     # for each row in requests collection
     # where objectId is less than current run time
     # preform request to web server
     # if successful remove row from db
 
-    success = 0
-    fail = 0
-
-    logging.warn('SYNC Starting Sync DB script')
-    logging.warn('SYNC Getting requests from %s', MONGO_URI)
+    logging.warn('[SYNC-DB] Starting Sync DB script')
+    logging.warn('[SYNC-DB] Getting requests from %s', MONGO_URI)
 
     while True:
         query = {'_id': {'$lt': ObjectId.from_datetime(datetime.datetime.utcnow())}}
-
+        success = 0
+        fail = 0
         for req in db.sync.find(query):
 
             status_ok = True
@@ -53,15 +52,20 @@ if __name__ == "__main__":
             if method and url:
                 url = SYNC_DESTINATION + url
                 r = requests.request(method, url, data=data)
-                status_ok = r.status_code == 200
 
-            if not status_ok:
+            logging.debug('[SYNC-DB] %s %s returned %s %s', method, url, r.status_code, data)
+
+            if r.status_code != 200:
                 fail += 1
-                print('Failed sync', method, url, data, sep='\t')
             else:
                 success += 1
-                print('Success sync', method, url, data, sep='\t')
                 db.sync.delete_one({'_id':req['_id']})
 
-        logging.info('SYNC Completed with %s successful and %s failed requests', success, fail)
+        logging.log(
+            logging.INFO if success or fail else logging.DEBUG,
+            '[SYNC-DB] Completed with %s successful and %s failed requests', 
+            success, 
+            fail
+        )
+
         time.sleep(60)
