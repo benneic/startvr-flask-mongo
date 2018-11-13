@@ -31,7 +31,7 @@ ENV PYTHONPATH=/app
 WORKDIR /app
 
 # install python dependencies
-RUN pip install --no-cache Flask Flask-PyMongo Flask-Moment
+RUN pip install --no-cache Flask Flask-PyMongo Flask-Moment Requests
 
 # Copy start.sh script that will start the app
 COPY start.sh /start.sh

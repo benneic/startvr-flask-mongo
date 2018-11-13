@@ -28,6 +28,17 @@ body {
     color: white;
 }
 
+.next-header h1{
+    text-align: center;
+    color: white;
+}
+
+.next-player h2{
+    text-align: center;
+    padding-top: 20px;
+    color: white;
+}
+
 .snow-form a{
     color: white !important;
     text-decoration: underline !important;

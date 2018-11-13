@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, render_template, Response
+from flask import Flask, jsonify, request, render_template, Response, redirect, url_for
 from flask.json import JSONEncoder
 from flask_pymongo import PyMongo
 from flask_moment import Moment
@@ -31,26 +31,139 @@ mongo = PyMongo(app)
 
 moment = Moment(app)
 
+# Players that sign up to play via the /signup endpoint look like this in the database
+# they are uniquely identified by email field on the _id key
+# waiting field is to signify that a play has signed up (either once or again) and is waiting to play
 player_schema = ['email','firstName','lastName','displayName','phone','postcode','hand']
+player_schema_hidden = ['waiting', 'updatedAt']
 player_presenter = ['email','firstName','lastName','displayName','phone','postcode','updatedAt','hand','scores']
 
+# Scores are populated by the game using the email field of each player
+# there can be many scores per player
+# they are uniquely identified by _id ObjectId default key which is also the timestamp of the score
 score_schema = ['email','displayName','score','easteregg']
 score_presenter = ['email','displayName','score','easteregg']
 
+# Each terminal would like to know which player is next, so we have a next player collection for that
+# there can only be one next player per terminal and a player can only play one game at a time
+# each terminal is uniquely identified by an integer and is stored in _id key
+next_player_schema = ['email','displayName']
+next_player_schema_hidden = ['isReady']
+
 iso8601_format_string = '%Y-%m-%dT%H:%M:%SZ'
 
+
+@app.route('/next-player', methods=['GET', 'DELETE'])
+def get_next_player():
+    # either returns 200 with a result, 204 when successful but no result, or 404 when terminal not found
+    try:
+        terminal = int(request.args.get('terminal'))
+    except TypeError:
+        return 'Please provide terminal id as an integer in query string /next-player?terminal=1', 404
+
+    # terminal has started playing with the next player
+    if request.method == 'DELETE':
+        mongo.db.next_player.delete_one({'_id':terminal})
+        # successfully processed reponse but not return any content
+        print('Deleting next player for terminal', terminal)
+        return '', 204
+
+    next_player = mongo.db.next_player.find_one({'_id':terminal})
+    if next_player:
+        mongo.db.next_player.update_one({'_id':terminal}, {'$set':{'isReady':True}})
+        return jsonify(next_player)
+
+    # successfully received reponse but not returning any content
+    # because there is no player waiting yet
+    return '', 204
+    
+
+@app.route('/next/<int:terminal>', methods=['POST', 'GET', 'DELETE'])
+def manage_next_player(terminal):
+    # GET    - return all players waiting to play and the current player waiting to play next for this terminal
+    # POST   - assign a player to a terminal to play next
+    # DELETE - put the player back in the waiting queue
+
+    if request.method == 'POST':
+        content = request.form
+        if not content:
+            return 'Bad request: Please send JSON or from data containing {}'.format(next_player_schema), 400
+
+        # if player sent is already in next queue then remove them and make them wait again
+        # otherwise add this player to the wait queue
+        doc = {
+            '_id': terminal,
+            'isReady': False
+        }
+        for param in next_player_schema:
+            if param not in content or not content[param]:
+                return 'Bad request: Missing {}'.format(param), 400     
+            doc[param] = content[param]
+
+        # get the next player for this terminal
+        next_player = mongo.db.next_player.find_one({'_id':terminal})
+
+        if not next_player:
+            mongo.db.next_player.save(doc)
+            mongo.db.players.update_one({'_id': doc['email']}, {'$unset':{'waiting': ''}})
+
+        elif next_player['email'] == content['email']:
+            mongo.db.next_player.delete_one({'_id':terminal})
+            mongo.db.players.update_one({'_id': next_player['email']}, {'$set':{'waiting': True}})
+
+        else:
+            print('already a player waiting??? not going to do anything')
+
+        return redirect('/next/{}'.format(terminal))
+
+    # get the next player for this terminal
+    next_player = mongo.db.next_player.find_one({'_id':terminal})
+    if next_player:
+        is_ready = next_player.get('isReady', False)
+        # get full player details
+        next_player = mongo.db.players.find_one({'_id': next_player['email']})
+        next_player['isReady'] = is_ready
+
+    #####
+    # GET
+    end = request.args.get('to')
+    if end:
+        try:
+            end = datetime.datetime.strptime(end, iso8601_format_string)
+        except ValueError:
+            return 'Bad request: Param "to" format required in UTC time zone and ISO8601 format {}'.format(iso8601_format_string), 400   
+    else:
+        end = datetime.datetime.utcnow()
+
+    start = request.args.get('from')
+    if start:
+        try:
+            start = datetime.datetime.strptime(start, iso8601_format_string)
+        except ValueError:
+            return 'Bad request: Param "to" format required in UTC time zone and ISO8601 format {}'.format(iso8601_format_string), 400   
+    else:
+        start = end - datetime.timedelta(days=1)
+
+    query = {
+        'updatedAt': {
+            '$gte': start,
+            '$lt': end
+        },
+        'waiting': True
+    }
+    players = mongo.db.players.find(query).sort('updatedAt', pymongo.DESCENDING)
+
+    return render_template('terminal.html', terminal=terminal, next_player=next_player, players_waiting=players)
 
 @app.route('/scores', methods=['POST', 'GET'])
 def scores():
 
     # POST
     if request.method == 'POST':
-        #result = mongo.db.scores.delete_many({})
-
         if request.is_json:
             content = request.get_json()
         else:
-            content = request.form
+            content = request.form       
 
         if not content:
             return 'Bad request: Please send JSON or from data containing {}'.format(score_schema), 400
@@ -69,6 +182,14 @@ def scores():
             }, {
                 "$push": { "scores" : content['score']}
             })
+
+        # sync scores with upstream server
+        mongo.db.sync.save({
+            'url': url_for('scores'),
+            'method': 'post',
+            'data': content
+        })    
+
         return 'OK', 200
 
     # GET
@@ -271,7 +392,18 @@ def signup():
         # use email as player primary key
         doc['_id'] = content['email']
         doc['updatedAt'] = datetime.datetime.utcnow()
+        # all players are waiting to play each time they sign up
+        doc['waiting'] = True
+
         mongo.db.players.save(doc)
+
+        # sync player with upstream server
+        mongo.db.sync.save({
+            'url': url_for('signup'),
+            'method': 'post',
+            'data': content
+        })   
+
         return render_template('signup.html', firstName=content['firstName'], lastName=content['lastName'])
 
     return render_template('signup.html')
