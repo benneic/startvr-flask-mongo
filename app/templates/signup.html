@@ -38,8 +38,8 @@
             </div>
             <div class="form-group">
 
-                <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Last Name"
-                    pattern="[-A-Za-z][^\t\n\r]" minlength="1" maxlength="100" required>
+                <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Last Name" pattern="[-A-Za-z][^\t\n\r]"
+                    minlength="1" maxlength="100" required>
                 <div class="invalid-feedback">
                     Please tell us your last name.
                 </div>
@@ -51,9 +51,8 @@
                 </div>
             </div>
             <div class="form-group">
-                <input type="text" class="form-control" id="phone" name="phone" placeholder="Mobile number"
-                    pattern="[-()+0-9]{8,20}" minlength="8"
-                    maxlength="20" required>
+                <input type="text" class="form-control" id="phone" name="phone" placeholder="Mobile number" pattern="[-()+0-9]{8,20}"
+                    minlength="8" maxlength="20" required>
                 <div class="invalid-feedback">
                     Please enter your phone number.
                 </div>
@@ -67,12 +66,12 @@
             <div class="form-group form-row">
                 <div class="col">
                     <input type="text" class="form-control" id="displayName" name="displayName" placeholder="Display Name"
-                        aria-describedby="displayNameHelpBlock" minlength="3" maxlength="12" 
-                        pattern="^[-!$%^&*()_+~={}\[\]:;<>?\/A-Za-z0-9]{3,12}$" autocorrect="off" autocapitalize="none" required>
+                        aria-describedby="displayNameHelpBlock" minlength="3" maxlength="12" pattern="^[-!$%^&*()_+~={}\[\]:;<>?\/A-Za-z0-9]{3,12}$"
+                        autocorrect="off" autocapitalize="none" required>
                     <div class="invalid-feedback">
                         Must be 3-12 characters long, contain letters and numbers, and must not contain spaces,
                         special characters, or emoji.
-                </div>
+                    </div>
                 </div>
                 <div class="col">
                     <select class="form-control" id="hand" name="hand">
@@ -80,7 +79,7 @@
                         <option value="left">Left</option>
                         <option value="right">Right</option>
                         <option value="both">Both</option>
-                      </select>
+                    </select>
                 </div>
             </div>
             <!--
@@ -119,8 +118,8 @@
         </form>
 
 
-    <!-- Ts & Cs Modal -->
-    <div class="modal fade" id="tacModal" tabindex="-1" role="dialog" aria-labelledby="tacModalTitle" aria-hidden="true">
+        <!-- Ts & Cs Modal -->
+        <div class="modal fade" id="tacModal" tabindex="-1" role="dialog" aria-labelledby="tacModalTitle" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -144,7 +143,7 @@
                 </div>
             </div>
         </div>
-    
+
         {% if firstName %}
         <!-- Thank You Modal -->
         <div class="modal fade show" id="thanksModal" tabindex="-1" role="dialog" aria-labelledby="thanksModalTitle"
@@ -174,8 +173,8 @@
             </div>
         </div>
         {% endif %}
-    
-    
+
+
         <script>
             // Example starter JavaScript for disabling form submissions if there are invalid fields
             (function () {
@@ -196,7 +195,7 @@
                             }
                             form.classList.add('was-validated');
                         }, false);
-    
+
                         var progressValidation = Array.prototype.filter.call($(form).find(':input'),
                             function (input) {
                                 input.addEventListener('change', function (event) {
@@ -208,12 +207,12 @@
                                     }
                                 }, false);
                             });
-    
+
                     });
                 }, false);
             })();
         </script>
-    
+
         {% if firstName %}
         <script>
             // show the thanks modal on page load if firstname is set
