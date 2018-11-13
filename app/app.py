@@ -67,7 +67,12 @@ def get_next_player(terminal):
     next_player = mongo.db.next_player.find_one({'_id':terminal})
     if next_player:
         mongo.db.next_player.update_one({'_id':terminal}, {'$set':{'isReady':True}})
-        return jsonify(next_player)
+        player = mongo.db.players.find_one({'_id': next_player.get('email')})
+        return "{0}|{1}|{2}\n".format(
+                player.get('email'),
+                player.get('displayName' ,''),
+                player.get('hand', 'right')
+            )
 
     # successfully received reponse but not returning any content
     # because there is no player waiting yet
