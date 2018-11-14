@@ -31,6 +31,8 @@ mongo = PyMongo(app)
 
 moment = Moment(app)
 
+station_schema = ['status']
+
 # Players that sign up to play via the /signup endpoint look like this in the database
 # they are uniquely identified by email field on the _id key
 # waiting field is to signify that a play has signed up (either once or again) and is waiting to play
@@ -44,29 +46,60 @@ player_presenter = ['email','firstName','lastName','displayName','phone','postco
 score_schema = ['email','displayName','score','easteregg']
 score_presenter = ['email','displayName','score','easteregg']
 
-# Each terminal would like to know which player is next, so we have a next player collection for that
-# there can only be one next player per terminal and a player can only play one game at a time
-# each terminal is uniquely identified by an integer and is stored in _id key
+# Each station would like to know which player is next, so we have a next player collection for that
+# there can only be one next player per station and a player can only play one game at a time
+# each station is uniquely identified by an integer and is stored in _id key
 next_player_schema = ['email','displayName']
 next_player_schema_hidden = ['isReady']
 
 iso8601_format_string = '%Y-%m-%dT%H:%M:%SZ'
 
 
-@app.route('/next/<terminal>/player', methods=['GET', 'POST'])
-def get_next_player(terminal):
-    # either returns 200 with a result, 204 when successful but no result, or 404 when terminal not found
+@app.route('/station/<station>', methods=['POST'])
+def station(station):
+    if not station:
+        return '', 404
 
-    # terminal has started playing with the next player
+    content = request.form
+    if not content:
+        return 'Bad request: Please send JSON or from data containing {}'.format(next_player_schema), 400
+
+    doc = {
+        '_id': station
+    }
+    for param in station_schema:
+        if param not in content or content[param] == '':
+            return 'Bad request: Missing {}'.format(param), 400     
+        doc[param] = content[param]
+
+    mongo.db.station.save(doc)
+    return '', 204
+
+
+@app.route('/station/<station>/status',)
+def station_status(station):
+    if not station:
+        return '', 404
+    result = mongo.db.station.find_one({'_id': station})
+    if not result:
+        return '', 404
+    return result.get('status', 'Waiting for status'), 200
+    
+
+@app.route('/next/<station>/player', methods=['GET', 'POST'])
+def get_next_player(station):
+    # either returns 200 with a result, 204 when successful but no result, or 404 when station not found
+
+    # station has started playing with the next player
     if request.method == 'POST':
-        mongo.db.next_player.delete_one({'_id':terminal})
+        mongo.db.next_player.delete_one({'_id':station})
         # successfully processed reponse but not return any content
-        print('Deleting next player for terminal', terminal)
+        print('Deleting next player for station', station)
         return '', 204
 
-    next_player = mongo.db.next_player.find_one({'_id':terminal})
+    next_player = mongo.db.next_player.find_one({'_id':station})
     if next_player:
-        mongo.db.next_player.update_one({'_id':terminal}, {'$set':{'isReady':True}})
+        mongo.db.next_player.update_one({'_id':station}, {'$set':{'isReady':True}})
         player = mongo.db.players.find_one({'_id': next_player.get('email')})
         return "{0}|{1}|{2}\n".format(
                 player.get('email'),
@@ -79,11 +112,10 @@ def get_next_player(terminal):
     return '', 204
     
 
-@app.route('/next/<terminal>', methods=['POST', 'GET', 'DELETE'])
-def manage_next_player(terminal):
-    # GET    - return all players waiting to play and the current player waiting to play next for this terminal
-    # POST   - assign a player to a terminal to play next
-    # DELETE - put the player back in the waiting queue
+@app.route('/next/<station>', methods=['POST', 'GET'])
+def manage_next_player(station):
+    # GET    - return all players waiting to play and the current player waiting to play next for this station
+    # POST   - assign a player to a station to play next
 
     if request.method == 'POST':
         content = request.form
@@ -93,7 +125,7 @@ def manage_next_player(terminal):
         # if player sent is already in next queue then remove them and make them wait again
         # otherwise add this player to the wait queue
         doc = {
-            '_id': terminal,
+            '_id': station,
             'isReady': False
         }
         for param in next_player_schema:
@@ -101,24 +133,24 @@ def manage_next_player(terminal):
                 return 'Bad request: Missing {}'.format(param), 400     
             doc[param] = content[param]
 
-        # get the next player for this terminal
-        next_player = mongo.db.next_player.find_one({'_id':terminal})
+        # get the next player for this station
+        next_player = mongo.db.next_player.find_one({'_id':station})
 
         if not next_player:
             mongo.db.next_player.save(doc)
             mongo.db.players.update_one({'_id': doc['email']}, {'$unset':{'waiting': ''}})
 
         elif next_player['email'] == content['email']:
-            mongo.db.next_player.delete_one({'_id':terminal})
+            mongo.db.next_player.delete_one({'_id':station})
             mongo.db.players.update_one({'_id': next_player['email']}, {'$set':{'waiting': True}})
 
         else:
             print('already a player waiting??? not going to do anything')
 
-        return redirect('/next/{}'.format(terminal))
+        return redirect('/next/{}'.format(station))
 
-    # get the next player for this terminal
-    next_player = mongo.db.next_player.find_one({'_id':terminal})
+    # get the next player for this station
+    next_player = mongo.db.next_player.find_one({'_id':station})
     if next_player:
         is_ready = next_player.get('isReady', False)
         # get full player details
@@ -154,7 +186,7 @@ def manage_next_player(terminal):
     }
     players = mongo.db.players.find(query).sort('updatedAt', pymongo.DESCENDING)
 
-    return render_template('terminal.html', terminal=terminal, next_player=next_player, players_waiting=players)
+    return render_template('station.html', station=station, next_player=next_player, players_waiting=players)
 
 @app.route('/scores', methods=['POST', 'GET'])
 def scores():
