@@ -86,7 +86,7 @@ def station_status(station):
     return result.get('status', 'Waiting for status'), 200
     
 
-@app.route('/next/<station>/player', methods=['GET', 'POST'])
+@app.route('/station/<station>/player', methods=['GET', 'POST'])
 def get_next_player(station):
     # either returns 200 with a result, 204 when successful but no result, or 404 when station not found
 

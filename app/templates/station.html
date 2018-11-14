@@ -32,7 +32,17 @@
     <div class="snow-header">
     </div>
     <div class="next-header">
-        <h1>Player queue for Station {{ station }}</h1>
+        <h1>Station {{ station }}</h1>
+    </div>
+    <div class="next-player">
+        <h2>Status</h2>
+        <table class="table table-striped table-bordered table-dark table-hover">
+            <thead>
+                <tr>
+                    <th scope="col" style="text-align:center;">Waiting for player</th>
+                </tr>
+            </thead>
+        </table>
     </div>
     <div class="next-player">
         {% if next_player %}
