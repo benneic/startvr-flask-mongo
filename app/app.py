@@ -52,8 +52,10 @@ score_presenter = ['email','displayName','score','easteregg']
 next_player_schema = ['email','displayName']
 next_player_schema_hidden = ['isReady']
 
-iso8601_format_string = '%Y-%m-%dT%H:%M:%SZ'
+ISO8601_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
+def parse_isodate(date_string):
+    return datetime.datetime.strptime(date_string, ISO8601_FORMAT)
 
 @app.route('/station/<station>', methods=['POST'])
 def station(station):
@@ -162,18 +164,18 @@ def manage_next_player(station):
     end = request.args.get('to')
     if end:
         try:
-            end = datetime.datetime.strptime(end, iso8601_format_string)
+            end = parse_isodate(end)
         except ValueError:
-            return 'Bad request: Param "to" format required in UTC time zone and ISO8601 format {}'.format(iso8601_format_string), 400   
+            return 'Bad request: Param "to" format required in UTC time zone and ISO8601 format {}'.format(ISO8601_FORMAT), 400   
     else:
         end = datetime.datetime.utcnow()
 
     start = request.args.get('from')
     if start:
         try:
-            start = datetime.datetime.strptime(start, iso8601_format_string)
+            start = parse_isodate(start)
         except ValueError:
-            return 'Bad request: Param "to" format required in UTC time zone and ISO8601 format {}'.format(iso8601_format_string), 400   
+            return 'Bad request: Param "start" format required in UTC time zone and ISO8601 format {}'.format(ISO8601_FORMAT), 400   
     else:
         start = end - datetime.timedelta(days=1)
 
@@ -230,18 +232,18 @@ def scores():
     end = request.args.get('to')
     if end:
         try:
-            end = datetime.datetime.strptime(end, iso8601_format_string)
+            end = parse_isodate(end)
         except ValueError:
-            return 'Bad request: Param "to" format required in UTC time zone and ISO8601 format {}'.format(iso8601_format_string), 400   
+            return 'Bad request: Param "to" format required in UTC time zone and ISO8601 format {}'.format(ISO8601_FORMAT), 400   
     else:
         end = datetime.datetime.utcnow()
 
     start = request.args.get('from')
     if start:
         try:
-            start = datetime.datetime.strptime(start, iso8601_format_string)
+            start = parse_isodate(start)
         except ValueError:
-            return 'Bad request: Param "to" format required in UTC time zone and ISO8601 format {}'.format(iso8601_format_string), 400   
+            return 'Bad request: Param "start" format required in UTC time zone and ISO8601 format {}'.format(ISO8601_FORMAT), 400   
     else:
         start = end - datetime.timedelta(days=1)
 
@@ -256,8 +258,8 @@ def scores():
     if sort == 'time':
         sort = '_id'
 
-    skip = int(request.args.get('skip', 0))
-    limit = int(request.args.get('limit', 0))
+    skip = request.args.get('skip', 0, int)
+    limit = request.args.get('limit', 0, int)
     output = request.args.get('output')
     
     cursor = mongo.db.scores.find(query).sort(sort, pymongo.DESCENDING).skip(skip).limit(limit)
@@ -319,18 +321,18 @@ def players():
     end = request.args.get('to')
     if end:
         try:
-            end = datetime.datetime.strptime(end, iso8601_format_string)
+            end = parse_isodate(end)
         except ValueError:
-            return 'Bad request: Param "to" format required in UTC time zone and ISO8601 format {}'.format(iso8601_format_string), 400   
+            return 'Bad request: Param "to" format required in UTC time zone and ISO8601 format {}'.format(ISO8601_FORMAT), 400   
     else:
         end = datetime.datetime.utcnow()
 
     start = request.args.get('from')
     if start:
         try:
-            start = datetime.datetime.strptime(start, iso8601_format_string)
+            start = parse_isodate(start)
         except ValueError:
-            return 'Bad request: Param "to" format required in UTC time zone and ISO8601 format {}'.format(iso8601_format_string), 400   
+            return 'Bad request: Param "start" format required in UTC time zone and ISO8601 format {}'.format(ISO8601_FORMAT), 400   
     else:
         start = end - datetime.timedelta(days=1)
 
@@ -349,9 +351,9 @@ def players():
 
     print('sorting with', sort)
 
-    skip = int(request.args.get('skip', 0))
-    limit = int(request.args.get('limit', 0))
-    output = request.args.get('output')
+    skip = request.args.get('skip', default=0, type=int)
+    limit = request.args.get('limit', default=0, type=int)
+    output = request.args.get('output', 'pipe')
 
     cursor = mongo.db.players.find(query).sort(sort, pymongo.DESCENDING).skip(skip).limit(limit)
 
