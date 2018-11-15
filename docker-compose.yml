@@ -10,9 +10,11 @@ web:
     - FLASK_APP=/app/app.py
     - MONGO_HOST=mongodb
   restart: always
+  container_name: web
 mongodb:
   ports:
     - "27017:27017"
   image: mongo
   command: --smallfiles
   restart: always
+  container_name: mongo
