@@ -41,8 +41,21 @@
                 <td>{{ player.phone }}</td>
                 <td>{{ player.postcode }}</td>
                 <td>{{ player.hand }}</td>
-                <td>{{ ((player.scores|default([0]))|sort(reverse=True))[0] }}</td>
-                <td>{{ (player.scores|default([]))|length }}</td>
+                {% if player.score is  iterable %}
+                <td>
+                    {{ ((player.scores|default([0]))|sort(reverse=True))[0] }}
+                </td>
+                <td>
+                  {{ (player.scores|default([]))|length }}
+                </td>
+                {% else %}
+                <td>
+                    0
+                </td>
+                <td>
+                  0
+                </td>
+                {% endif %}
               </tr>
               {% endfor %}
 
