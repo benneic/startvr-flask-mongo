@@ -192,35 +192,35 @@ def manage_next_player(station):
 
 
 @app.route('/score', methods=['POST'])
-def score():
-    if request.is_json:
-        content = request.get_json()
-    else:
-        content = request.form       
+def score():  
+    if not request.form:
+        return 'Bad request: Please send form url encoded data containing {}'.format(score_schema), 400
 
-    if not content:
-        return 'Bad request: Please send JSON or from data containing {}'.format(score_schema), 400
-
-    doc = dict()
     for param in score_schema:
-        if param not in content or content[param] == '':
+        if param not in request.form or request.form[param] == '':
             return 'Bad request: Missing {}'.format(param), 400     
-        doc[param] = content[param]
+        
+    score = request.form.get('score', 0, int)
 
-    mongo.db.scores.save(doc)
+    mongo.db.scores.save({
+        'email': request.form.get('email'),
+        'displayName': request.form.get('displayName'),
+        'score': score,
+        'easteregg': request.form.get('easteregg', False, bool)
+    })
     
     # save score to players record
     mongo.db.players.update({ 
-            "_id": content['email'] 
+            "_id": request.form['email'] 
         }, {
-            "$push": { "scores" : content['score']}
+            "$push": { "scores" : score}
         })
 
     # sync scores with upstream server
     mongo.db.sync.save({
         'url': url_for('score'),
         'method': 'post',
-        'data': content
+        'data': request.form
     })    
 
     return 'OK', 200
