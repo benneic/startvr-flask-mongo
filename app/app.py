@@ -78,7 +78,7 @@ def station(station):
     return '', 204
 
 
-@app.route('/station/<station>/status',)
+@app.route('/station/<station>/status')
 def station_status(station):
     if not station:
         return '', 404
@@ -218,7 +218,7 @@ def score():
 
     # sync scores with upstream server
     mongo.db.sync.save({
-        'url': url_for('scores'),
+        'url': url_for('score'),
         'method': 'post',
         'data': content
     })    
