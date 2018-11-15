@@ -96,7 +96,6 @@ def get_next_player(station):
     if request.method == 'POST':
         mongo.db.next_player.delete_one({'_id':station})
         # successfully processed reponse but not return any content
-        print('Deleting next player for station', station)
         return '', 204
 
     next_player = mongo.db.next_player.find_one({'_id':station})
@@ -146,8 +145,7 @@ def manage_next_player(station):
             mongo.db.next_player.delete_one({'_id':station})
             mongo.db.players.update_one({'_id': next_player['email']}, {'$set':{'waiting': True}})
 
-        else:
-            print('already a player waiting??? not going to do anything')
+        # else already a player waiting so dont do anything
 
         return redirect('/next/{}'.format(station))
 
@@ -191,6 +189,12 @@ def manage_next_player(station):
     return render_template('station.html', station=station, next_player=next_player, players_waiting=players)
 
 
+def parse_bool(val):
+    if val.upper() == 'TRUE' or val == '1':
+        return True
+    return False
+
+
 @app.route('/score', methods=['POST'])
 def score():  
     if not request.form:
@@ -201,12 +205,13 @@ def score():
             return 'Bad request: Missing {}'.format(param), 400     
         
     score = request.form.get('score', 0, int)
+    easteregg = request.form.get('easteregg', False, parse_bool)
 
     mongo.db.scores.save({
-        'email': request.form.get('email'),
-        'displayName': request.form.get('displayName'),
+        'email': request.form['email'],
+        'displayName': request.form['displayName'],
         'score': score,
-        'easteregg': request.form.get('easteregg', False, bool)
+        'easteregg': easteregg
     })
     
     # save score to players record
@@ -350,8 +355,6 @@ def players():
     elif sort == 'score':
         sort = 'scores'        
 
-    print('sorting with', sort)
-
     skip = request.args.get('skip', default=0, type=int)
     limit = request.args.get('limit', default=0, type=int)
     output = request.args.get('output', 'pipe')
@@ -430,6 +433,8 @@ def signup():
         doc['updatedAt'] = datetime.datetime.utcnow()
         # all players are waiting to play each time they sign up
         doc['waiting'] = True
+        # add a base scores array with no scoress
+        doc['scores'] = []
 
         mongo.db.players.save(doc)
 

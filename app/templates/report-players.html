@@ -43,7 +43,7 @@
                 <td>{{ player.hand }}</td>
                 {% if player.score is iterable %}
                 <td>
-                    {{ ((player.scores|default([0]))|sort(reverse=True))[0] }}
+                    {{ ((player.scores|default([0]))|sort(reverse=True))[0]|default(0) }}
                 </td>
                 <td>
                   {{ (player.scores|default([]))|length }}
