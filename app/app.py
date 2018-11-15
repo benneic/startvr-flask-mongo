@@ -190,44 +190,45 @@ def manage_next_player(station):
 
     return render_template('station.html', station=station, next_player=next_player, players_waiting=players)
 
-@app.route('/scores', methods=['POST', 'GET'])
+
+@app.route('/score', methods=['POST'])
+def score():
+    if request.is_json:
+        content = request.get_json()
+    else:
+        content = request.form       
+
+    if not content:
+        return 'Bad request: Please send JSON or from data containing {}'.format(score_schema), 400
+
+    doc = dict()
+    for param in score_schema:
+        if param not in content or content[param] == '':
+            return 'Bad request: Missing {}'.format(param), 400     
+        doc[param] = content[param]
+
+    mongo.db.scores.save(doc)
+    
+    # save score to players record
+    mongo.db.players.update({ 
+            "_id": content['email'] 
+        }, {
+            "$push": { "scores" : content['score']}
+        })
+
+    # sync scores with upstream server
+    mongo.db.sync.save({
+        'url': url_for('scores'),
+        'method': 'post',
+        'data': content
+    })    
+
+    return 'OK', 200
+
+
+@app.route('/scores')
 def scores():
-
-    # POST
-    if request.method == 'POST':
-        if request.is_json:
-            content = request.get_json()
-        else:
-            content = request.form       
-
-        if not content:
-            return 'Bad request: Please send JSON or from data containing {}'.format(score_schema), 400
-
-        doc = dict()
-        for param in score_schema:
-            if param not in content or content[param] == '':
-                return 'Bad request: Missing {}'.format(param), 400     
-            doc[param] = content[param]
-
-        mongo.db.scores.save(doc)
-        
-        # save score to players record
-        mongo.db.players.update({ 
-                "_id": content['email'] 
-            }, {
-                "$push": { "scores" : content['score']}
-            })
-
-        # sync scores with upstream server
-        mongo.db.sync.save({
-            'url': url_for('scores'),
-            'method': 'post',
-            'data': content
-        })    
-
-        return 'OK', 200
-
-    # GET
+    # return a report of scores in various formats
 
     end = request.args.get('to')
     if end:
