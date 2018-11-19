@@ -316,8 +316,8 @@ def scores():
                 score.get('score', 0),
                 score.get('easteregg', False),
                 score.get('email',''),
-                score.get('displayName' ,'')
-                newline,
+                score.get('displayName' ,''),
+                newline
             )
     
     return Response(generate(), headers=headers, mimetype=mimetype)
