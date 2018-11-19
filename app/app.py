@@ -307,7 +307,7 @@ def scores():
     else:
         mimetype = 'text/text; charset=utf-8'
         seperator = '|'
-        newline = '||'
+        newline = '~~'
     def generate():
         for score in cursor: 
             yield "{1}{0}{2}{0}{3}{0}{4}{0}{5}{6}".format(
