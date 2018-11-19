@@ -155,7 +155,8 @@ def manage_next_player(station):
         is_ready = next_player.get('isReady', False)
         # get full player details
         next_player = mongo.db.players.find_one({'_id': next_player['email']})
-        next_player['isReady'] = is_ready
+        if next_player:
+            next_player['isReady'] = is_ready
 
     #####
     # GET
