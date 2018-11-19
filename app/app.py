@@ -303,19 +303,21 @@ def scores():
         headers['Content-Disposition'] = "attachment; filename='{}.csv'".format(filename)
         mimetype = 'text/csv; charset=utf-8'
         seperator = ','
+        newline = '\n'
     else:
         mimetype = 'text/text; charset=utf-8'
         seperator = '|'
-
+        newline = '||'
     def generate():
         for score in cursor: 
-            yield "{1}{0}{2}{0}{3}{0}{4}{0}{5}\n".format(
+            yield "{1}{0}{2}{0}{3}{0}{4}{0}{5}{6}".format(
                 seperator,
                 score['_id'].generation_time.isoformat(),
                 score.get('score', 0),
                 score.get('easteregg', False),
                 score.get('email',''),
                 score.get('displayName' ,'')
+                newline,
             )
     
     return Response(generate(), headers=headers, mimetype=mimetype)
