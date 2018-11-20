@@ -68,7 +68,7 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td scope="row">{{ 'Ready!' if next_player.isReady else 'Waiting' }}</td>
+                        <td scope="row">{{ if next_player.started 'Starting' else if next_player.isReady 'Ready To Start' else 'Waiting' }}</td>
                         <td>{{ next_player.displayName }}</td>
                         <td>{{ next_player.firstName }}</td>
                         <td>{{ next_player.lastName }}</td>
