@@ -84,7 +84,7 @@
                         </td>
                         <td>
                             --{{ currentplayer }}--
-                            {% if next_player.started != True and currentplayer == '' %}
+                            {% if next_player.started != True and currentplayer = '' %}
                             <form id="form{{ next_player.displayName }}" method="POST">
                                 <input type="hidden" name="email" value="{{ next_player.email }}" />
                                 <input type="hidden" name="displayName" value="{{ next_player.displayName }}" />
