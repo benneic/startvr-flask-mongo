@@ -236,8 +236,8 @@ def score(station):
     })    
     
     mongo.db.next_player.delete_one({'_id':station})
-    mongo.db.players.update_one({'_id': request.form['email']}, {'$unset':{'waiting': ''}})
-    mongo.db.players.update_one({'_id': request.form['email']}, {'$unset':{'started': ''}})
+    #mongo.db.players.update_one({'_id': request.form['email']}, {'$unset':{'waiting': ''}})
+    #mongo.db.players.update_one({'_id': request.form['email']}, {'$unset':{'started': ''}})
 
     return 'OK', 200
 
