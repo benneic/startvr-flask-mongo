@@ -151,6 +151,11 @@ def manage_next_player(station):
             mongo.db.players.update_one({'_id': next_player['email']}, {'$set':{'waiting': True}})
             mongo.db.players.update_one({'_id': next_player['email']}, {'$unset':{'started': ''}})
 
+        elif next_player['email'] == content['email'] and content['action'] == 'complete':
+            mongo.db.next_player.delete_one({'_id':station})
+            mongo.db.players.update_one({'_id': next_player['email']}, {'$set':{'waiting': ''}})
+            mongo.db.players.update_one({'_id': next_player['email']}, {'$unset':{'started': True}})            
+            
         # else already a player waiting so dont do anything
 
         return redirect('/next/{}'.format(station))
