@@ -111,8 +111,16 @@ def get_next_player(station):
     # successfully received reponse but not returning any content
     # because there is no player waiting yet
     return '', 204
-    
 
+@app.route('/reset/<station>', methods=['GET'])
+def manage_reset(station):
+    # get the next player for this station
+    next_player = mongo.db.next_player.find_one({'_id':station})
+    if next_player:
+        mongo.db.next_player.delete_one({'_id':station})
+    
+    return 'OK', 200
+            
 @app.route('/next/<station>', methods=['POST', 'GET'])
 def manage_next_player(station):
     # GET    - return all players waiting to play and the current player waiting to play next for this station
