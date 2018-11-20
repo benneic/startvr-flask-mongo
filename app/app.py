@@ -31,8 +31,7 @@ mongo = PyMongo(app)
 
 moment = Moment(app)
 
-station_schema = ['status','currentplayer']
-
+station_schema = ['status']
 # Players that sign up to play via the /signup endpoint look like this in the database
 # they are uniquely identified by email field on the _id key
 # waiting field is to signify that a play has signed up (either once or again) and is waiting to play
@@ -94,7 +93,7 @@ def get_next_player(station):
 
     # station has started playing with the next player
     if request.method == 'POST':
-        mongo.db.next_player.delete_one({'_id':station})
+        # mongo.db.next_player.delete_one({'_id':station})
         # successfully processed reponse but not return any content
         return '', 204
 
@@ -135,18 +134,13 @@ def manage_next_player(station):
                 return 'Bad request: Missing {}'.format(param), 400     
             doc[param] = content[param]
             
-        result = mongo.db.station.find_one({'_id': station})
-        if not result:
-            currentplayer = ''
-        else:
-            currentplayer = result.get('currentplayer', '')
-            
         # get the next player for this station
         next_player = mongo.db.next_player.find_one({'_id':station})
 
         if not next_player:
             mongo.db.next_player.save(doc)
             mongo.db.players.update_one({'_id': doc['email']}, {'$unset':{'waiting': ''}})
+            mongo.db.players.update_one({'_id': doc['email']}, {'$unset':{'started': ''}})
         
         elif next_player['email'] == content['email'] and content['action'] == 'start':
             mongo.db.players.update_one({'_id': next_player['email']}, {'$set':{'started': True}})
@@ -207,8 +201,8 @@ def parse_bool(val):
     return False
 
 
-@app.route('/score', methods=['POST'])
-def score():  
+@app.route('/score/<station>', methods=['POST'])
+def score(station):  
     if not request.form:
         return 'Bad request: Please send form url encoded data containing {}'.format(score_schema), 400
 
@@ -239,7 +233,8 @@ def score():
         'method': 'post',
         'data': request.form
     })    
-
+    
+    mongo.db.next_player.delete_one({'_id':station})
     return 'OK', 200
 
 
