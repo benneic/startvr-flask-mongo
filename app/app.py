@@ -137,10 +137,9 @@ def manage_next_player(station):
 
         station_status = mongo.db.station.find_one({'_id': station})
         if not station_status:
-            current_player = ''
+            current_player = False
         else:
-            current_player = station_status.get('currentPlayer', '')
-
+            current_player = station_status.get('currentPlayer', '') == ''
         # get the next player for this station
         next_player = mongo.db.next_player.find_one({'_id':station})
 
