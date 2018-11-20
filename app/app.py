@@ -135,6 +135,12 @@ def manage_next_player(station):
                 return 'Bad request: Missing {}'.format(param), 400     
             doc[param] = content[param]
 
+        station_status = mongo.db.station.find_one({'_id': station})
+        if not station_status:
+            current_player = ''
+        else:
+            current_player = station_status.get('currentPlayer', '')
+
         # get the next player for this station
         next_player = mongo.db.next_player.find_one({'_id':station})
 
