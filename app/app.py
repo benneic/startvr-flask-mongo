@@ -202,7 +202,7 @@ def parse_bool(val):
     return False
 
 
-@app.route('/score/<station>', methods=['POST'])
+@app.route('/score', methods=['POST'])
 def score(station):  
     if not request.form:
         return 'Bad request: Please send form url encoded data containing {}'.format(score_schema), 400
@@ -234,10 +234,6 @@ def score(station):
         'method': 'post',
         'data': request.form
     })    
-    
-    mongo.db.next_player.delete_one({'_id':station})
-    #mongo.db.players.update_one({'_id': request.form['email']}, {'$unset':{'waiting': ''}})
-    #mongo.db.players.update_one({'_id': request.form['email']}, {'$unset':{'started': ''}})
 
     return 'OK', 200
 
