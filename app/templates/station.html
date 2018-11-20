@@ -68,7 +68,7 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td scope="row">{% if next_player.started %}Starting{% else %}{% if next_player.isReady %}Ready To Start{% else %}Waiting{% endif %}{% endif %}</td>
+                        <td scope="row">{% if next_player.started %}Started{% else %}{% if next_player.isReady %}Ready To Start{% else %}Waiting{% endif %}{% endif %}</td>
                         <td>{{ next_player.displayName }}</td>
                         <td>{{ next_player.firstName }}</td>
                         <td>{{ next_player.lastName }}</td>
@@ -83,8 +83,7 @@
                             </form>
                         </td>
                         <td>
-                            --{{ currentplayer }}--
-                            {% if next_player.started != True and currentplayer = '' %}
+                            {% if next_player.started != True %}
                             <form id="form{{ next_player.displayName }}" method="POST">
                                 <input type="hidden" name="email" value="{{ next_player.email }}" />
                                 <input type="hidden" name="displayName" value="{{ next_player.displayName }}" />
