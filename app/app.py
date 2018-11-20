@@ -31,7 +31,7 @@ mongo = PyMongo(app)
 
 moment = Moment(app)
 
-station_schema = ['status']
+station_schema = ['status','currentPlayer']
 
 # Players that sign up to play via the /signup endpoint look like this in the database
 # they are uniquely identified by email field on the _id key
