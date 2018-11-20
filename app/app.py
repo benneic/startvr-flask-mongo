@@ -37,7 +37,7 @@ station_schema = ['status']
 # they are uniquely identified by email field on the _id key
 # waiting field is to signify that a play has signed up (either once or again) and is waiting to play
 player_schema = ['email','firstName','lastName','displayName','phone','postcode','hand']
-player_schema_hidden = ['waiting', 'updatedAt']
+player_schema_hidden = ['waiting', 'started', 'updatedAt']
 player_presenter = ['email','firstName','lastName','displayName','phone','postcode','updatedAt','hand','scores']
 
 # Scores are populated by the game using the email field of each player
@@ -102,10 +102,11 @@ def get_next_player(station):
     if next_player:
         mongo.db.next_player.update_one({'_id':station}, {'$set':{'isReady':True}})
         player = mongo.db.players.find_one({'_id': next_player.get('email')})
-        return "{0}|{1}|{2}\n".format(
+        return "{0}|{1}|{2}|{3}\n".format(
                 player.get('email'),
                 player.get('displayName' ,''),
-                player.get('hand', 'right')
+                player.get('hand', 'right'),
+                player.get('started', False)
             )
 
     # successfully received reponse but not returning any content
@@ -140,8 +141,12 @@ def manage_next_player(station):
         if not next_player:
             mongo.db.next_player.save(doc)
             mongo.db.players.update_one({'_id': doc['email']}, {'$unset':{'waiting': ''}})
-
-        elif next_player['email'] == content['email']:
+        
+        elif next_player['email'] == content['email'] and content['action'] == 'start':
+            mongo.db.next_player.delete_one({'_id':station})
+            mongo.db.players.update_one({'_id': next_player['email']}, {'$set':{'started': True}})
+            
+        elif next_player['email'] == content['email'] and content['action'] == 'cancel':
             mongo.db.next_player.delete_one({'_id':station})
             mongo.db.players.update_one({'_id': next_player['email']}, {'$set':{'waiting': True}})
 
