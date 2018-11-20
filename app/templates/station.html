@@ -33,7 +33,7 @@
         <script type=text/javascript>
 
             $(document).ready(function () {
-                var interval = 2000;   //number of mili seconds between each call
+                var interval = 1000;   //number of mili seconds between each call
                 var refresh = function() {
                     $.ajax({
                         url: "/station/{{ station }}/status",
@@ -63,6 +63,7 @@
                         <th scope="col">Top Score</th>
                         <th scope="col">Plays</th>
                         <th scope="col">Cancel</th>
+                        <th scope="col">Start</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -77,9 +78,18 @@
                             <form id="form{{ next_player.displayName }}" method="POST">
                                 <input type="hidden" name="email" value="{{ next_player.email }}" />
                                 <input type="hidden" name="displayName" value="{{ next_player.displayName }}" />
+                                <input type="hidden" name="action" value="cancel" />
                                 <button class="btn btn-danger" type="submit">Cancel</button>
                             </form>
                         </td>
+                        <td>
+                            <form id="form{{ next_player.displayName }}" method="POST">
+                                <input type="hidden" name="email" value="{{ next_player.email }}" />
+                                <input type="hidden" name="displayName" value="{{ next_player.displayName }}" />
+                                <input type="hidden" name="action" value="start" />
+                                <button class="btn btn-primary" type="submit">Start</button>
+                            </form>
+                        </td>                        
                     </tr>
                 </tbody>
             </table>
