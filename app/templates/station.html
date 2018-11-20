@@ -75,7 +75,7 @@
                         <td>{{ ((next_player.scores|default([0]))|sort(reverse=True))[0] }}</td>
                         <td>{{ (next_player.scores|default([]))|length }}</td>
                         <td>
-                            {% if !next_player.started %}
+                            {% if next_player.started == false %}
                             <form id="form{{ next_player.displayName }}" method="POST">
                                 <input type="hidden" name="email" value="{{ next_player.email }}" />
                                 <input type="hidden" name="displayName" value="{{ next_player.displayName }}" />
@@ -85,7 +85,7 @@
                             {% endif %}                            
                         </td>
                         <td>
-                            {% if !next_player.started %}
+                            {% if next_player.started == false %}
                             <form id="form{{ next_player.displayName }}" method="POST">
                                 <input type="hidden" name="email" value="{{ next_player.email }}" />
                                 <input type="hidden" name="displayName" value="{{ next_player.displayName }}" />
