@@ -31,7 +31,7 @@ mongo = PyMongo(app)
 
 moment = Moment(app)
 
-station_schema = ['status','currentPlayer']
+station_schema = ['status','currentplayer']
 
 # Players that sign up to play via the /signup endpoint look like this in the database
 # they are uniquely identified by email field on the _id key
@@ -135,11 +135,11 @@ def manage_next_player(station):
                 return 'Bad request: Missing {}'.format(param), 400     
             doc[param] = content[param]
 
-        station_status = mongo.db.station.find_one({'_id': station})
-        if not station_status:
-            current_player = False
+        stationstatus = mongo.db.station.find_one({'_id': station})
+        if not stationstatus:
+            currentplayer = False
         else:
-            current_player = station_status.get('currentPlayer', '') == ''
+            currentplayer = stationstatus.get('currentplayer', '') != ''
         # get the next player for this station
         next_player = mongo.db.next_player.find_one({'_id':station})
 
