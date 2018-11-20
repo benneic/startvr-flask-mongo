@@ -143,7 +143,6 @@ def manage_next_player(station):
             mongo.db.players.update_one({'_id': doc['email']}, {'$unset':{'waiting': ''}})
         
         elif next_player['email'] == content['email'] and content['action'] == 'start':
-            mongo.db.next_player.delete_one({'_id':station})
             mongo.db.players.update_one({'_id': next_player['email']}, {'$set':{'started': True}})
             
         elif next_player['email'] == content['email'] and content['action'] == 'cancel':
