@@ -215,7 +215,7 @@ def parse_bool(val):
     return False
 
 
-@app.route('/score', methods=['POST'])
+@app.route('/score/<station>', methods=['POST'])
 def score(station):  
     if not request.form:
         return 'Bad request: Please send form url encoded data containing {}'.format(score_schema), 400
