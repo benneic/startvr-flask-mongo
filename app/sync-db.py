@@ -10,7 +10,7 @@ import logging
 
 ## SET THESE 
 SYNC_DESTINATION = '' # should be 'http://server:port'
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 
 
 MONGO_HOST = os.environ.get('MONGO_HOST', '127.0.0.1')
