@@ -251,7 +251,7 @@ def score(station):
     return 'OK', 200
 
 
-@app.route('/WIxJPpENIKApy0RkFqINnIVllmIJT99FIMeg9NqeKgxcPCUa5uhSMkdEm6lE/scores')
+@app.route('/scores')
 def scores():
     # return a report of scores in various formats
 
@@ -342,7 +342,7 @@ def scores():
     return Response(generate(), headers=headers, mimetype=mimetype)
 
 
-@app.route('/WIxJPpENIKApy0RkFqINnIVllmIJT99FIMeg9NqeKgxcPCUa5uhSMkdEm6lE/players', methods=['GET'])
+@app.route('/players', methods=['GET'])
 def players():
     
     # GET
