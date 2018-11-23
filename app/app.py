@@ -27,6 +27,8 @@ app.json_encoder = CustomJSONEncoder
 mongo_host = os.environ.get('MONGO_HOST', '127.0.0.1')
 app.config["MONGO_URI"] = "mongodb://{}:27017/marketcity".format(mongo_host)
 
+app.debug = True
+
 mongo = PyMongo(app)
 
 moment = Moment(app)
