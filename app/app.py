@@ -251,6 +251,38 @@ def score(station):
     return 'OK', 200
 
 
+@app.route('/testscore', methods=['GET'])
+def testscore():  
+    
+    testd = {'score':5, 'easteregg': False, 'email': 'esfefsefsef@gdrgdrgdr.com', 'displayName': 'MillieTest'}
+    score = testd.get('score', 0, int)
+    easteregg = testd.get('easteregg', False, parse_bool)
+
+    mongo.db.scores.save({
+        'email': testd['email'],
+        'displayName': testd['displayName'],
+        'score': score,
+        'easteregg': easteregg
+    })
+    
+    # save score to players record
+    mongo.db.players.update({ 
+            "_id": testd['email'] 
+        }, {
+            "$push": { "scores" : score}
+        })
+
+    # sync scores with upstream server
+    mongo.db.sync.save({
+        'url': '/score/0',
+        'method': 'post',
+        'data': testd
+    })    
+
+    return 'OK', 200
+
+
+
 @app.route('/scores')
 def scores():
     # return a report of scores in various formats
