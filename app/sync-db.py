@@ -9,7 +9,8 @@ import time
 import logging
 
 ## SET THESE 
-SYNC_DESTINATION = '' # should be 'http://server:port'
+#SYNC_DESTINATION = '' # should be 'http://server:port'
+SYNC_DESTINATION = 'http://marketcity.australiaeast.cloudapp.azure.com' # should be 'http://server:port'
 logging.basicConfig(level=logging.DEBUG)
 
 
