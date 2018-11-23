@@ -472,7 +472,7 @@ def signup():
     return render_template('signup.html')
 
 
-@app.route('/', methods=['GET'])
+@app.route('/WIxJPpENIKApy0RkFqINnIVllmIJT99FIMeg9NqeKgxcPCUa5uhSMkdEm6lE', methods=['GET'])
 def report():
     return render_template('index.html')
 
