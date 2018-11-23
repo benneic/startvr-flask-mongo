@@ -27,7 +27,7 @@ app.json_encoder = CustomJSONEncoder
 mongo_host = os.environ.get('MONGO_HOST', '127.0.0.1')
 app.config["MONGO_URI"] = "mongodb://{}:27017/marketcity".format(mongo_host)
 
-app.debug = True
+#app.debug = True
 
 mongo = PyMongo(app)
 
@@ -257,10 +257,30 @@ def score(station):
 def testscore():  
     
     testdata = dict([('score','5'), ('easteregg','false'), ('email','esfefsefsef@gdrgdrgdr.com'), ('displayName','MillieTest')])
-    score = testdata.get('score', 0, int)
+    #score = testdata.get('score', 0, int)
     #easteregg = testdata.get('easteregg', False, parse_bool)
 
-   
+    mongo.db.scores.save({
+        'email': testdata['email'],
+        'displayName': testdata['displayName'],
+        'score': 5,
+        'easteregg': False
+    })
+    
+    # save score to players record
+    mongo.db.players.update({ 
+            "_id": testdata['email'] 
+        }, {
+            "$push": { "scores" : 5}
+        })
+
+    # sync scores with upstream server
+    mongo.db.sync.save({
+        'url': '/score/0',
+        'method': 'post',
+        'data': testdata
+    })    
+
     return 'OK', 200
 
 
