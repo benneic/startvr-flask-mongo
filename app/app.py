@@ -243,7 +243,7 @@ def score(station):
 
     # sync scores with upstream server
     mongo.db.sync.save({
-        'url': url_for('score'),
+        'url': '/score/0',
         'method': 'post',
         'data': request.form
     })    
