@@ -254,7 +254,7 @@ def score(station):
 @app.route('/testscore', methods=['GET'])
 def testscore():  
     
-    testd = {'score':5, 'easteregg': False, 'email': 'esfefsefsef@gdrgdrgdr.com', 'displayName': 'MillieTest'}
+    testd = {'score':'5', 'easteregg': 'False', 'email': 'esfefsefsef@gdrgdrgdr.com', 'displayName': 'MillieTest'}
     score = testd.get('score', 0, int)
     easteregg = testd.get('easteregg', False, parse_bool)
 
