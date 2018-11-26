@@ -376,6 +376,101 @@ def scores():
     return Response(generate(), headers=headers, mimetype=mimetype)
 
 
+
+
+@app.route('/scoresraw')
+def scores():
+    # return a report of scores in various formats
+
+    end = request.args.get('to')
+    if end:
+        try:
+            end = parse_isodate(end)
+        except ValueError:
+            return 'Bad request: Param "to" format required in UTC time zone and ISO8601 format {}'.format(ISO8601_FORMAT), 400   
+    else:
+        end = datetime.datetime.utcnow()
+
+    start = request.args.get('from')
+    if start:
+        try:
+            start = parse_isodate(start)
+        except ValueError:
+            return 'Bad request: Param "start" format required in UTC time zone and ISO8601 format {}'.format(ISO8601_FORMAT), 400   
+    else:
+        start = end - datetime.timedelta(days=1)
+
+    query = {
+        '_id': {
+            '$gte': ObjectId.from_datetime(start),
+            '$lt': ObjectId.from_datetime(end)
+        },
+    }
+
+    sort = request.args.get('sort', 'score')
+    if sort == 'time':
+        sort = '_id'
+
+    skip = request.args.get('skip', 0, int)
+    limit = request.args.get('limit', 0, int)
+    output = request.args.get('output')
+    
+    cursor = mongo.db.scores.find(query).sort(sort, pymongo.DESCENDING).skip(skip).limit(limit)
+
+    if output in ['json','html']:
+        scores = []
+        for score in cursor: 
+            scores.append({
+                'time': score['_id'].generation_time,
+                'score': score.get('score', 0),
+                'easteregg': score.get('easteregg', False),
+                'email': score.get('email',''),
+                'displayName': score.get('displayName' ,''),
+            })
+
+        if output == 'html':
+            return render_template('report-scores.html', scores=scores)
+        
+        return jsonify({
+            'scores': scores,
+            'query': {
+                'from': start.isoformat(),
+                'to': end.isoformat(),
+                'sort': sort,
+                'skip': skip,
+                'limit': limit
+            }
+        })
+
+    # output in delimited format
+    headers = {}
+    if output == 'csv':
+        filename = "VR Players {} to {}".format(start.isoformat()[:10], end.isoformat()[:10])
+        headers['Content-Disposition'] = "attachment; filename='{}.csv'".format(filename)
+        mimetype = 'text/csv; charset=utf-8'
+        seperator = ','
+        newline = '\n'
+    else:
+        mimetype = 'text/text; charset=utf-8'
+        seperator = '|'
+        newline = '~~'
+    def generate():
+        for score in cursor: 
+            yield "{1}{0}{2}{0}{3}{0}{4}{0}{5}{6}".format(
+                seperator,
+                score['_id'].generation_time.isoformat(),
+                score.get('score', 0),
+                score.get('easteregg', False),
+                score.get('email',''),
+                score.get('displayName' ,''),
+                newline
+            )
+    
+    return Response(generate(), headers=headers, mimetype=mimetype)
+
+
+
+
 @app.route('/players', methods=['GET'])
 def players():
     
