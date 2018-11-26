@@ -379,7 +379,7 @@ def scores():
 
 
 @app.route('/scoresraw')
-def scores():
+def scoresraw():
     # return a report of scores in various formats
 
     end = request.args.get('to')
