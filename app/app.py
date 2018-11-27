@@ -319,10 +319,9 @@ def scores():
         sort = '_id'
 
     skip = request.args.get('skip', 0, int)
-    limit = 100
     output = request.args.get('output')
     
-    cursor = mongo.db.scores.find(query).sort(sort, pymongo.DESCENDING).skip(skip).limit(limit)
+    cursor = mongo.db.scores.find(query).sort(sort, pymongo.DESCENDING).skip(skip)
     
     # output in delimited format
     headers = {}
