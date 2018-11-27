@@ -381,6 +381,7 @@ def scores():
                     tmpe.append(score.get('email',''))
                     if score.get('displayName','') not in tmpdn:
                         tmpdn.append(score.get('displayName',''))
+
                         yield "{1}{0}{2}{0}{3}{0}{4}{0}{5}{6}".format(
                             seperator,
                             score['_id'].generation_time.isoformat(),
@@ -393,7 +394,6 @@ def scores():
                         count = count + 1
     
     return Response(generatescores(), headers=headers, mimetype=mimetype)
-
 
 @app.route('/scoresraw')
 def scoresraw():
