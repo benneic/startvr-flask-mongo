@@ -314,61 +314,21 @@ def scores():
         },
     }
 
-    sort = request.args.get('sort', 'maxscore')
+    sort = request.args.get('sort', 'score')
     if sort == 'time':
         sort = '_id'
 
     skip = request.args.get('skip', 0, int)
-    limit = request.args.get('limit', 0, int)
     limit = 100
     output = request.args.get('output')
     
     cursor = mongo.db.scores.find(query).sort(sort, pymongo.DESCENDING).skip(skip).limit(limit)
     
-    #cursor = mongo.db.scores.aggregate([{
-    #    { "$match" : {'_id': { '$gte': ObjectId.from_datetime(start), '$lt': ObjectId.from_datetime(end) } } }, 
-    #    { "$group" : {'_id': '$email', 'maxscore': { $max: "$score" } } }
-    #}]).sort(sort, pymongo.DESCENDING).skip(skip).limit(limit)
-
-    
-    
-    if output in ['json','html']:
-        scores = []
-        for score in cursor: 
-            scores.append({
-                'time': score['_id'].generation_time,
-                'score': score.get('score', 0),
-                'easteregg': score.get('easteregg', False),
-                'email': score.get('email',''),
-                'displayName': score.get('displayName' ,''),
-            })
-
-        if output == 'html':
-            return render_template('report-scores.html', scores=scores)
-        
-        return jsonify({
-            'scores': scores,
-            'query': {
-                'from': start.isoformat(),
-                'to': end.isoformat(),
-                'sort': sort,
-                'skip': skip,
-                'limit': limit
-            }
-        })
-
     # output in delimited format
     headers = {}
-    if output == 'csv':
-        filename = "VR Players {} to {}".format(start.isoformat()[:10], end.isoformat()[:10])
-        headers['Content-Disposition'] = "attachment; filename='{}.csv'".format(filename)
-        mimetype = 'text/csv; charset=utf-8'
-        seperator = ','
-        newline = '\n'
-    else:
-        mimetype = 'text/text; charset=utf-8'
-        seperator = '|'
-        newline = '~~'
+    mimetype = 'text/text; charset=utf-8'
+    seperator = '|'
+    newline = '~~'
         
     def generatescores():
         tmpe = []
@@ -377,9 +337,13 @@ def scores():
         
         for score in cursor: 
             if count <=9:
+                
                 if score.get('email','') not in tmpe:
+                    
                     tmpe.append(score.get('email',''))
+                    
                     if score.get('displayName','') not in tmpdn:
+                        
                         tmpdn.append(score.get('displayName',''))
 
                         yield "{1}{0}{2}{0}{3}{0}{4}{0}{5}{6}".format(
