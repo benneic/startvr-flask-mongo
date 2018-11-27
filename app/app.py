@@ -320,7 +320,7 @@ def scores():
 
     skip = request.args.get('skip', 0, int)
     limit = request.args.get('limit', 0, int)
-    limit = 40
+    limit = 100
     output = request.args.get('output')
     
     cursor = mongo.db.scores.find(query).sort(sort, pymongo.DESCENDING).skip(skip).limit(limit)
@@ -337,7 +337,7 @@ def scores():
         for score in cursor: 
             scores.append({
                 'time': score['_id'].generation_time,
-                'score': score.get('maxscore', 0),
+                'score': score.get('score', 0),
                 'easteregg': score.get('easteregg', False),
                 'email': score.get('email',''),
                 'displayName': score.get('displayName' ,''),
@@ -371,20 +371,28 @@ def scores():
         newline = '~~'
         
     def generatescores():
+        tmpe = []
+        tmpdn = []
+        count = 0
+        
         for score in cursor: 
-            yield "{1}{0}{2}{0}{3}{0}{4}{0}{5}{6}".format(
-                seperator,
-                score['_id'].generation_time.isoformat(),
-                score.get('score', 0),
-                score.get('easteregg', False),
-                score.get('email',''),
-                score.get('displayName' ,''),
-                newline
-            )
+            if count <=9:
+                if score.get('email','') not in tmpe:
+                    tmpe.append(score.get('email',''))
+                    if score.get('displayName','') not in tmpdn:
+                        tmpdn.append(score.get('displayName',''))
+                        yield "{1}{0}{2}{0}{3}{0}{4}{0}{5}{6}".format(
+                            seperator,
+                            score['_id'].generation_time.isoformat(),
+                            score.get('score', 0),
+                            score.get('easteregg', False),
+                            score.get('email',''),
+                            score.get('displayName' ,''),
+                            newline
+                        )
+                        count = count + 1
     
     return Response(generatescores(), headers=headers, mimetype=mimetype)
-
-
 
 
 @app.route('/scoresraw')
