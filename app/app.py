@@ -321,10 +321,9 @@ def scores():
     skip = request.args.get('skip', 0, int)
     limit = request.args.get('limit', 0, int)
     output = request.args.get('output')
-    cursor = mongo.db.scores.aggregate([{
-        { "$match" : {'_id': { '$gte': ObjectId.from_datetime(start), '$lt': ObjectId.from_datetime(end) } } }, 
-        { "$group" : {'_id': '$email', 'maxscore': { $max: "$score" } } }
-    }]).sort(sort, pymongo.DESCENDING).skip(skip).limit(limit)
+    
+    cursor = mongo.db.scores.find(query).sort(sort, pymongo.DESCENDING).skip(skip).limit(limit)
+    
     
     if output in ['json','html']:
         scores = []
