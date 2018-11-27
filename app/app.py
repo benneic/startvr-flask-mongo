@@ -314,22 +314,24 @@ def scores():
         },
     }
 
-    sort = request.args.get('sort', 'score')
+    sort = request.args.get('sort', 'maxscore')
     if sort == 'time':
         sort = '_id'
 
     skip = request.args.get('skip', 0, int)
     limit = request.args.get('limit', 0, int)
     output = request.args.get('output')
+    cursor = mongo.db.scores.aggregate([{
+        { "$match" : {'_id': { '$gte': ObjectId.from_datetime(start), '$lt': ObjectId.from_datetime(end) } } }, 
+        { "$group" : {'_id': '$email', 'maxscore': { $max: "$score" } } }
+    }]).sort(sort, pymongo.DESCENDING).skip(skip).limit(limit)
     
-    cursor = mongo.db.scores.find(query).sort(sort, pymongo.DESCENDING).skip(skip).limit(limit)
-
     if output in ['json','html']:
         scores = []
         for score in cursor: 
             scores.append({
                 'time': score['_id'].generation_time,
-                'score': score.get('score', 0),
+                'score': score.get('maxscore', 0),
                 'easteregg': score.get('easteregg', False),
                 'email': score.get('email',''),
                 'displayName': score.get('displayName' ,''),
@@ -361,7 +363,8 @@ def scores():
         mimetype = 'text/text; charset=utf-8'
         seperator = '|'
         newline = '~~'
-    def generate():
+        
+    def generatescores():
         for score in cursor: 
             yield "{1}{0}{2}{0}{3}{0}{4}{0}{5}{6}".format(
                 seperator,
@@ -373,7 +376,7 @@ def scores():
                 newline
             )
     
-    return Response(generate(), headers=headers, mimetype=mimetype)
+    return Response(generatescores(), headers=headers, mimetype=mimetype)
 
 
 
